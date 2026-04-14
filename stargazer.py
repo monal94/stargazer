@@ -47,3 +47,72 @@ def fetch_metadata(owner, name):
             print("Warning: GitHub API rate limit hit. Skipping metadata fetch.")
             return None
         raise
+
+
+def load_repos(path=None):
+    """Load repos.json from disk."""
+    with open(path or DATA_FILE) as f:
+        return json.load(f)
+
+
+def save_repos(data, path=None):
+    """Write repos.json to disk."""
+    with open(path or DATA_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+        f.write("\n")
+
+
+def add_repo(data, owner, name, tags=None, notes=None):
+    """Add a repo entry. Fetches metadata from GitHub. Exits if duplicate or not found."""
+    if any(r["owner"] == owner and r["name"] == name for r in data["repos"]):
+        sys.exit(f"Already tracked: {owner}/{name}")
+
+    meta = fetch_metadata(owner, name)
+    if meta is None:
+        sys.exit(f"Could not fetch repo: {owner}/{name} (not found or rate limited)")
+    entry = {
+        "owner": owner,
+        "name": name,
+        "url": f"https://github.com/{owner}/{name}",
+        "description": meta.get("description", ""),
+        "language": meta.get("language", ""),
+        "stars": meta.get("stargazers_count", 0),
+        "topics": meta.get("topics", []),
+        "tags": tags or [],
+        "notes": notes or "",
+        "status": "to-explore",
+        "added_at": str(date.today()),
+    }
+    data["repos"].append(entry)
+    return data
+
+
+VALID_STATUSES = ("to-explore", "exploring", "explored", "archived")
+
+
+def remove_repo(data, owner, name):
+    """Remove a repo from tracking. Exits if not found."""
+    before = len(data["repos"])
+    data["repos"] = [r for r in data["repos"] if not (r["owner"] == owner and r["name"] == name)]
+    if len(data["repos"]) == before:
+        sys.exit(f"Not tracked: {owner}/{name}")
+    return data
+
+
+def update_repo(data, owner, name, tags=None, notes=None, status=None, replace_tags=False):
+    """Update tags, notes, or status on a tracked repo. Tags are merged by default, replaced if replace_tags=True. Exits if not found or invalid status."""
+    repo = next((r for r in data["repos"] if r["owner"] == owner and r["name"] == name), None)
+    if not repo:
+        sys.exit(f"Not tracked: {owner}/{name}")
+    if status and status not in VALID_STATUSES:
+        sys.exit(f"Invalid status: {status}. Choose from: {', '.join(VALID_STATUSES)}")
+    if tags is not None:
+        if replace_tags:
+            repo["tags"] = tags
+        else:
+            repo["tags"] = sorted(set(repo.get("tags", []) + tags))
+    if notes is not None:
+        repo["notes"] = notes
+    if status:
+        repo["status"] = status
+    return data

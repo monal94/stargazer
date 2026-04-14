@@ -1,10 +1,13 @@
 # tests/test_stargazer.py
 import json
+import os
+import tempfile
 import unittest
 import urllib.error
 from unittest.mock import patch, MagicMock
 
 from stargazer import parse_repo_url, format_stars, fetch_metadata
+from stargazer import load_repos, save_repos, add_repo
 
 
 class TestParseRepoUrl(unittest.TestCase):
@@ -72,6 +75,115 @@ class TestFetchMetadata(unittest.TestCase):
 
         result = fetch_metadata("owner", "repo")
         self.assertIsNone(result)
+
+
+class TestJsonManagement(unittest.TestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.data_file = os.path.join(self.tmpdir, "repos.json")
+        with open(self.data_file, "w") as f:
+            json.dump({"repos": []}, f)
+
+    def test_load_empty(self):
+        data = load_repos(self.data_file)
+        self.assertEqual(data["repos"], [])
+
+    def test_save_and_load(self):
+        data = {"repos": [{"owner": "a", "name": "b"}]}
+        save_repos(data, self.data_file)
+        loaded = load_repos(self.data_file)
+        self.assertEqual(loaded["repos"][0]["owner"], "a")
+
+    @patch("stargazer.fetch_metadata")
+    def test_add_repo(self, mock_fetch):
+        mock_fetch.return_value = {
+            "description": "desc",
+            "language": "Python",
+            "stargazers_count": 100,
+            "topics": ["ai"],
+        }
+        data = {"repos": []}
+        result = add_repo(data, "owner", "name", tags=["ml"], notes="interesting")
+        self.assertEqual(len(result["repos"]), 1)
+        entry = result["repos"][0]
+        self.assertEqual(entry["owner"], "owner")
+        self.assertEqual(entry["tags"], ["ml"])
+        self.assertEqual(entry["notes"], "interesting")
+        self.assertEqual(entry["status"], "to-explore")
+
+    def test_add_duplicate_skipped(self):
+        """Duplicate check fires before fetch_metadata is called — no mock needed."""
+        data = {"repos": [{"owner": "o", "name": "r"}]}
+        with self.assertRaises(SystemExit):
+            add_repo(data, "o", "r")
+
+    @patch("stargazer.fetch_metadata")
+    def test_add_exits_when_repo_not_found(self, mock_fetch):
+        mock_fetch.return_value = None
+        data = {"repos": []}
+        with self.assertRaises(SystemExit):
+            add_repo(data, "nonexistent", "repo")
+
+
+from stargazer import remove_repo, update_repo
+
+
+class TestRemoveRepo(unittest.TestCase):
+    def test_removes_existing(self):
+        data = {"repos": [{"owner": "a", "name": "b"}, {"owner": "c", "name": "d"}]}
+        result = remove_repo(data, "a", "b")
+        self.assertEqual(len(result["repos"]), 1)
+        self.assertEqual(result["repos"][0]["owner"], "c")
+
+    def test_exits_when_not_found(self):
+        data = {"repos": [{"owner": "a", "name": "b"}]}
+        with self.assertRaises(SystemExit):
+            remove_repo(data, "x", "y")
+
+
+class TestUpdateRepo(unittest.TestCase):
+    def test_update_tags_merges_by_default(self):
+        """Tags are merged and sorted alphabetically."""
+        data = {"repos": [
+            {"owner": "a", "name": "b", "tags": ["ai", "cli"], "notes": "original"},
+        ]}
+        result = update_repo(data, "a", "b", tags=["ml", "cli"])
+        self.assertEqual(result["repos"][0]["tags"], ["ai", "cli", "ml"])
+        self.assertEqual(result["repos"][0]["notes"], "original")
+
+    def test_update_tags_replaces_when_flag_set(self):
+        data = {"repos": [
+            {"owner": "a", "name": "b", "tags": ["ai", "cli"], "notes": "original"},
+        ]}
+        result = update_repo(data, "a", "b", tags=["ml"], replace_tags=True)
+        self.assertEqual(result["repos"][0]["tags"], ["ml"])
+
+    def test_update_notes(self):
+        data = {"repos": [
+            {"owner": "a", "name": "b", "tags": ["ai"], "notes": "old note"},
+        ]}
+        result = update_repo(data, "a", "b", notes="new note")
+        self.assertEqual(result["repos"][0]["notes"], "new note")
+        self.assertEqual(result["repos"][0]["tags"], ["ai"])
+
+    def test_update_status(self):
+        data = {"repos": [
+            {"owner": "a", "name": "b", "tags": [], "notes": "", "status": "to-explore"},
+        ]}
+        result = update_repo(data, "a", "b", status="explored")
+        self.assertEqual(result["repos"][0]["status"], "explored")
+
+    def test_exits_when_not_found(self):
+        data = {"repos": []}
+        with self.assertRaises(SystemExit):
+            update_repo(data, "x", "y", tags=["ai"])
+
+    def test_exits_on_invalid_status(self):
+        data = {"repos": [
+            {"owner": "a", "name": "b", "tags": [], "notes": "", "status": "to-explore"},
+        ]}
+        with self.assertRaises(SystemExit):
+            update_repo(data, "a", "b", status="invalid")
 
 
 if __name__ == "__main__":

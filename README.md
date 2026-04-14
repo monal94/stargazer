@@ -1,6 +1,6 @@
 # Stargazer
 
-> My collection of interesting GitHub repos to explore
+A CLI tool to track interesting GitHub repos you want to explore. Add a repo URL, and stargazer fetches its metadata, organizes it by tags, and generates this README automatically — grouped by topic, sorted by stars, with weekly stat refreshes via GitHub Actions.
 
 ## Usage
 

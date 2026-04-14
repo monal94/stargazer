@@ -41,7 +41,128 @@
         "llms",
         "openai"
       ],
+      "tags": [
+        "claude"
+      ],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "lightpanda-io",
+      "name": "browser",
+      "url": "https://github.com/lightpanda-io/browser",
+      "description": "Lightpanda: the headless browser designed for AI and automation",
+      "language": "Zig",
+      "stars": 28700,
+      "topics": [
+        "browser",
+        "browser-automation",
+        "cdp",
+        "headless",
+        "playwright",
+        "puppeteer",
+        "zig"
+      ],
       "tags": [],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "msitarzewski",
+      "name": "agency-agents",
+      "url": "https://github.com/msitarzewski/agency-agents",
+      "description": "A complete AI agency at your fingertips - From frontend wizards to Reddit community ninjas, from whimsy injectors to reality checkers. Each agent is a specialized expert with personality, processes, and proven deliverables.",
+      "language": "Shell",
+      "stars": 79918,
+      "topics": [],
+      "tags": [
+        "ai",
+        "agents",
+        "skills",
+        "md"
+      ],
+      "notes": "multi-agent framework",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "NVIDIA",
+      "name": "NemoClaw",
+      "url": "https://github.com/NVIDIA/NemoClaw",
+      "description": "Run OpenClaw more securely inside NVIDIA OpenShell with managed inference",
+      "language": "TypeScript",
+      "stars": 19209,
+      "topics": [],
+      "tags": [
+        "ai",
+        "agents",
+        "nvidia",
+        "inference",
+        "openclaw"
+      ],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "Shubhamsaboo",
+      "name": "openclaw-vertexai-memorybank",
+      "url": "https://github.com/Shubhamsaboo/openclaw-vertexai-memorybank",
+      "description": "Vertex AI Memory Bank Plugin for OpenClaw",
+      "language": "TypeScript",
+      "stars": 132,
+      "topics": [],
+      "tags": [
+        "ai",
+        "openclaw",
+        "vertex-ai",
+        "memory"
+      ],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "gsd-build",
+      "name": "get-shit-done",
+      "url": "https://github.com/gsd-build/get-shit-done",
+      "description": "A light-weight and powerful meta-prompting, context engineering and spec-driven development system for Claude Code by T\u00c2CHES.",
+      "language": "JavaScript",
+      "stars": 52907,
+      "topics": [
+        "claude-code",
+        "context-engineering",
+        "meta-prompting",
+        "spec-driven-development"
+      ],
+      "tags": [
+        "ai",
+        "agents",
+        "claude",
+        "claude-code",
+        "prompting",
+        "skills",
+        "md"
+      ],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "astral-sh",
+      "name": "ty",
+      "url": "https://github.com/astral-sh/ty",
+      "description": "An extremely fast Python type checker and language server, written in Rust.",
+      "language": "Python",
+      "stars": 18303,
+      "topics": [],
+      "tags": [
+        "python",
+        "tooling",
+        "type-checker"
+      ],
       "notes": "",
       "status": "to-explore",
       "added_at": "2026-04-15"

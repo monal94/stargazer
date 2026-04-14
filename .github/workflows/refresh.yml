@@ -1,0 +1,58 @@
+# .github/workflows/refresh.yml
+name: Refresh repo stats
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"  # Every Monday at 9am UTC
+  workflow_dispatch:        # Allow manual trigger from GitHub UI
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refresh metadata and regenerate README
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 stargazer.py --refresh
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet repos.json README.md || (git add repos.json README.md && git commit -m "chore: refresh repo stats" && git push)
+
+      - name: Create issue if repos failed to refresh
+        if: hashFiles('.refresh-failures') != ''
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eo pipefail
+          # Check if an open issue already exists
+          EXISTING=$(gh issue list --state open --search "Stargazer: repos failed to refresh" --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            echo "Open issue #$EXISTING already exists, skipping."
+            exit 0
+          fi
+          # Build issue body using printf for reliable newline handling
+          {
+            printf "The following repos could not be fetched during the weekly refresh:\n\n"
+            while IFS= read -r repo; do
+              printf -- "- [ ] %s\n" "$repo"
+            done < .refresh-failures
+            printf "\nThey may have been deleted, renamed, or made private. Consider removing them with:\n"
+            printf '```\npython3 stargazer.py <repo> --remove\n```\n'
+          } > /tmp/issue-body.md
+          gh issue create \
+            --title "Stargazer: repos failed to refresh" \
+            --body-file /tmp/issue-body.md

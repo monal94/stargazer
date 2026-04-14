@@ -82,7 +82,12 @@ def save_repos(data, path=None):
             json.dump(data, f, indent=2)
             f.write("\n")
         os.replace(tmp, target)
-    except OSError as e:
+    except (OSError, TypeError, ValueError) as e:
+        if os.path.exists(tmp):
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
         sys.exit(f"Failed to write {target}: {e}")
 
 
@@ -307,24 +312,35 @@ def generate_readme(data):
 
 def write_readme(content):
     """Write generated README to disk."""
-    with open(README_FILE, "w") as f:
-        f.write(content)
+    try:
+        with open(README_FILE, "w") as f:
+            f.write(content)
+    except OSError as e:
+        sys.exit(f"Failed to write {README_FILE}: {e}")
 
 
 def refresh_repos(data):
     """Re-fetch metadata from GitHub for all tracked repos. Returns (data, failures)."""
     failures = []
     for repo in data["repos"]:
-        print(f"  {repo['owner']}/{repo['name']}...", end=" ")
-        meta = fetch_metadata(repo["owner"], repo["name"])
+        owner = repo.get("owner")
+        name = repo.get("name")
+        if not owner or not name:
+            print(f"  Skipping malformed entry: {repo}")
+            failures.append("<malformed entry>")
+            continue
+        print(f"  {owner}/{name}...", end=" ")
+        meta = fetch_metadata(owner, name)
         if meta:
             repo["description"] = meta.get("description") or repo["description"]
             repo["language"] = meta.get("language") or repo["language"]
-            repo["stars"] = meta.get("stargazers_count") or repo["stars"]
-            repo["topics"] = meta.get("topics") or repo["topics"]
+            stars = meta.get("stargazers_count")
+            repo["stars"] = stars if stars is not None else repo["stars"]
+            topics = meta.get("topics")
+            repo["topics"] = topics if topics is not None else repo["topics"]
             print(f"★ {format_stars(repo['stars'])}")
         else:
-            failures.append(f"{repo['owner']}/{repo['name']}")
+            failures.append(f"{owner}/{name}")
             print("FAILED")
     return data, failures
 
@@ -391,12 +407,18 @@ def main():
             for repo_slug in failures:
                 print(f"  - {repo_slug}")
             failures_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".refresh-failures")
-            with open(failures_file, "w") as fh:
-                fh.write("\n".join(failures))
+            try:
+                with open(failures_file, "w") as fh:
+                    fh.write("\n".join(failures))
+            except OSError as e:
+                print(f"Warning: could not write {failures_file}: {e}")
         else:
             failures_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".refresh-failures")
-            if os.path.exists(failures_file):
-                os.remove(failures_file)
+            try:
+                if os.path.exists(failures_file):
+                    os.remove(failures_file)
+            except OSError:
+                pass
         print("Metadata refreshed.")
 
     if args.generate:

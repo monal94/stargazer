@@ -43,33 +43,30 @@ jobs:
           git commit -m "chore: refresh repo stats"
           git push
 
-      - name: Fail workflow if repos failed to refresh
-        if: hashFiles('.refresh-failures') != ''
-        run: echo "::warning::Some repos failed to refresh, see issue below."
-
-      - name: Create issue if repos failed to refresh
+      - name: Create issue and fail if repos failed to refresh
         if: hashFiles('.refresh-failures') != ''
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -eo pipefail
-          # Check if an open issue already exists
-          EXISTING=$(gh issue list --state open --search "Stargazer: repos failed to refresh" --json number --jq '.[0].number')
+          # Check if an open issue already exists (search in title for precision)
+          EXISTING=$(gh issue list --state open --search "in:title Stargazer: repos failed to refresh" --json number --jq '.[0].number')
           if [ -n "$EXISTING" ]; then
-            echo "Open issue #$EXISTING already exists, skipping."
-            exit 0
+            echo "Open issue #$EXISTING already exists, skipping issue creation."
+          else
+            # Build issue body
+            {
+              printf "The following repos could not be fetched during the weekly refresh:\n\n"
+              while IFS= read -r repo; do
+                printf -- "- [ ] %s\n" "$repo"
+              done < .refresh-failures
+              printf "\nThey may have been deleted, renamed, or made private. Consider removing them with:\n"
+              printf '```\npython3 stargazer.py <repo> --remove\n```\n'
+            } > /tmp/issue-body.md
+            gh issue create \
+              --title "Stargazer: repos failed to refresh" \
+              --body-file /tmp/issue-body.md
           fi
-          # Build issue body using printf for reliable newline handling
-          {
-            printf "The following repos could not be fetched during the weekly refresh:\n\n"
-            while IFS= read -r repo; do
-              printf -- "- [ ] %s\n" "$repo"
-            done < .refresh-failures
-            printf "\nThey may have been deleted, renamed, or made private. Consider removing them with:\n"
-            printf '```\npython3 stargazer.py <repo> --remove\n```\n'
-          } > /tmp/issue-body.md
-          gh issue create \
-            --title "Stargazer: repos failed to refresh" \
-            --body-file /tmp/issue-body.md
+          # Always fail the workflow when repos failed
           exit 1

@@ -685,6 +685,123 @@ class TestMain(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 main()
 
+    def test_main_update_repo(self):
+        """End-to-end test for --update path including tag merge and status."""
+        with open(self.data_file, "w") as f:
+            json.dump({"repos": [
+                {"owner": "a", "name": "b", "url": "https://github.com/a/b",
+                 "description": "desc", "language": "Python", "stars": 100,
+                 "topics": [], "tags": ["ai"], "notes": "old",
+                 "status": "to-explore", "added_at": "2026-04-15"},
+            ]}, f)
+
+        with patch("stargazer.DATA_FILE", self.data_file), \
+             patch("stargazer.README_FILE", self.readme_file), \
+             patch("sys.argv", ["stargazer", "a/b", "--update", "--tags", "cli,ml", "--status", "explored", "--notes", "new note"]):
+            main()
+
+        data = json.loads(open(self.data_file).read())
+        repo = data["repos"][0]
+        self.assertEqual(repo["tags"], ["ai", "cli", "ml"])
+        self.assertEqual(repo["status"], "explored")
+        self.assertEqual(repo["notes"], "new note")
+
+    @patch("stargazer.fetch_metadata")
+    def test_main_refresh_writes_failures_file(self, mock_fetch):
+        """End-to-end test for --refresh path writing .refresh-failures."""
+        mock_fetch.return_value = None
+        with open(self.data_file, "w") as f:
+            json.dump({"repos": [
+                {"owner": "gone", "name": "repo", "url": "https://github.com/gone/repo",
+                 "description": "desc", "language": "Python", "stars": 10,
+                 "topics": [], "tags": [], "notes": "",
+                 "status": "to-explore", "added_at": "2026-04-15"},
+            ]}, f)
+
+        failures_file = os.path.join(self.tmpdir, ".refresh-failures")
+        with patch("stargazer.DATA_FILE", self.data_file), \
+             patch("stargazer.README_FILE", self.readme_file), \
+             patch("stargazer.os.path.dirname", return_value=self.tmpdir), \
+             patch("stargazer.os.path.abspath", return_value=self.data_file), \
+             patch("sys.argv", ["stargazer", "--refresh"]):
+            main()
+
+        self.assertTrue(os.path.exists(failures_file))
+        self.assertIn("gone/repo", open(failures_file).read())
+
+    @patch("stargazer.fetch_metadata")
+    def test_main_refresh_cleans_failures_file_on_success(self, mock_fetch):
+        """End-to-end test for --refresh cleaning up .refresh-failures on success."""
+        mock_fetch.return_value = {
+            "description": "d", "language": "Go",
+            "stargazers_count": 5, "topics": [],
+        }
+        with open(self.data_file, "w") as f:
+            json.dump({"repos": [
+                {"owner": "ok", "name": "repo", "url": "https://github.com/ok/repo",
+                 "description": "d", "language": "Go", "stars": 5,
+                 "topics": [], "tags": [], "notes": "",
+                 "status": "to-explore", "added_at": "2026-04-15"},
+            ]}, f)
+
+        # Create a stale failures file
+        failures_file = os.path.join(self.tmpdir, ".refresh-failures")
+        with open(failures_file, "w") as f:
+            f.write("old/failure")
+
+        with patch("stargazer.DATA_FILE", self.data_file), \
+             patch("stargazer.README_FILE", self.readme_file), \
+             patch("stargazer.os.path.dirname", return_value=self.tmpdir), \
+             patch("stargazer.os.path.abspath", return_value=self.data_file), \
+             patch("sys.argv", ["stargazer", "--refresh"]):
+            main()
+
+        self.assertFalse(os.path.exists(failures_file))
+
+
+class TestRefreshZeroStars(unittest.TestCase):
+    """Verify that zero is a valid value for stars and topics, not treated as falsy."""
+
+    @patch("stargazer.fetch_metadata")
+    def test_zero_stars_updates_correctly(self, mock_fetch):
+        mock_fetch.return_value = {
+            "description": "desc",
+            "language": "Python",
+            "stargazers_count": 0,
+            "topics": ["ai"],
+        }
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "old", "language": "Python", "stars": 500,
+                "topics": ["old-topic"], "tags": [], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        result, failures = refresh_repos(data)
+        self.assertEqual(result["repos"][0]["stars"], 0)
+        self.assertEqual(failures, [])
+
+    @patch("stargazer.fetch_metadata")
+    def test_empty_topics_updates_correctly(self, mock_fetch):
+        mock_fetch.return_value = {
+            "description": "desc",
+            "language": "Python",
+            "stargazers_count": 100,
+            "topics": [],
+        }
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "old", "language": "Python", "stars": 100,
+                "topics": ["old-topic"], "tags": [], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        result, failures = refresh_repos(data)
+        self.assertEqual(result["repos"][0]["topics"], [])
+        self.assertEqual(failures, [])
+
 
 if __name__ == "__main__":
     unittest.main()

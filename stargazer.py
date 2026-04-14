@@ -116,3 +116,72 @@ def update_repo(data, owner, name, tags=None, notes=None, status=None, replace_t
     if status:
         repo["status"] = status
     return data
+
+
+DEFAULT_BLOCKED = {
+    "hacktoberfest", "good-first-issue", "awesome-list", "awesome",
+    "help-wanted", "beginner-friendly", "first-timers-only",
+    "up-for-grabs", "contributions-welcome",
+}
+
+DEFAULT_ALIASES = {
+    "ml": "machine-learning",
+    "js": "javascript",
+    "ts": "typescript",
+    "golang": "go",
+    "reactjs": "react",
+    "vuejs": "vue",
+    "nodejs": "node",
+    "py": "python",
+    "rb": "ruby",
+    "k8s": "kubernetes",
+    "tf": "terraform",
+}
+
+
+def get_config(data):
+    """Merge built-in defaults with user config from repos.json. Returns (blocked, aliases, reverse_aliases)."""
+    config = data.get("config", {})
+    blocked = DEFAULT_BLOCKED | set(config.get("blocked_tags", []))
+    aliases = {**DEFAULT_ALIASES, **config.get("tag_aliases", {})}
+    reverse_aliases = {}
+    for alias, canonical in aliases.items():
+        reverse_aliases.setdefault(canonical, []).append(alias)
+    return blocked, aliases, reverse_aliases
+
+
+def normalize_tags(tags, blocked, aliases):
+    """Filter blocked tags, resolve aliases, deduplicate. Returns list."""
+    result = []
+    for tag in tags:
+        if tag in blocked:
+            continue
+        tag = aliases.get(tag, tag)
+        if tag not in result:
+            result.append(tag)
+    return result
+
+
+def suggest_similar_tags(new_tags, existing_tags, aliases):
+    """Return a deduplicated list of suggestion strings for tags that alias or overlap with existing tags."""
+    seen = set()
+    suggestions = []
+    for tag in new_tags:
+        if tag in aliases:
+            hint = f'  Hint: "{tag}" will be grouped under "{aliases[tag]}"'
+            if hint not in seen:
+                seen.add(hint)
+                suggestions.append(hint)
+            continue
+        for existing in existing_tags:
+            if tag != existing:
+                tag_words = set(tag.split("-"))
+                existing_words = set(existing.split("-"))
+                common = tag_words & existing_words
+                if any(len(w) >= 3 for w in common):
+                    hint = f'  Hint: "{tag}" is similar to existing "{existing}"'
+                    if hint not in seen:
+                        seen.add(hint)
+                        suggestions.append(hint)
+                    break
+    return suggestions

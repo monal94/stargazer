@@ -126,6 +126,10 @@ class TestJsonManagement(unittest.TestCase):
 
 
 from stargazer import remove_repo, update_repo
+from stargazer import (
+    get_config, normalize_tags, suggest_similar_tags,
+    DEFAULT_BLOCKED, DEFAULT_ALIASES,
+)
 
 
 class TestRemoveRepo(unittest.TestCase):
@@ -184,6 +188,75 @@ class TestUpdateRepo(unittest.TestCase):
         ]}
         with self.assertRaises(SystemExit):
             update_repo(data, "a", "b", status="invalid")
+
+
+class TestGetConfig(unittest.TestCase):
+    def test_defaults_when_no_config(self):
+        data = {"repos": []}
+        blocked, aliases, reverse_aliases = get_config(data)
+        self.assertIn("hacktoberfest", blocked)
+        self.assertEqual(aliases["ml"], "machine-learning")
+
+    def test_user_config_extends_defaults(self):
+        data = {
+            "config": {
+                "blocked_tags": ["spam"],
+                "tag_aliases": {"llm": "large-language-model"},
+            },
+            "repos": [],
+        }
+        blocked, aliases, reverse_aliases = get_config(data)
+        self.assertIn("hacktoberfest", blocked)
+        self.assertIn("spam", blocked)
+        self.assertEqual(aliases["ml"], "machine-learning")
+        self.assertEqual(aliases["llm"], "large-language-model")
+
+
+class TestNormalizeTags(unittest.TestCase):
+    def test_removes_blocked(self):
+        blocked = {"hacktoberfest", "spam"}
+        aliases = {}
+        result = normalize_tags(["ai", "hacktoberfest", "cli"], blocked, aliases)
+        self.assertEqual(result, ["ai", "cli"])
+
+    def test_resolves_aliases(self):
+        blocked = set()
+        aliases = {"ml": "machine-learning", "js": "javascript"}
+        result = normalize_tags(["ml", "js", "python"], blocked, aliases)
+        self.assertEqual(result, ["machine-learning", "javascript", "python"])
+
+    def test_deduplicates_after_alias(self):
+        blocked = set()
+        aliases = {"ml": "machine-learning"}
+        result = normalize_tags(["ml", "machine-learning"], blocked, aliases)
+        self.assertEqual(result, ["machine-learning"])
+
+    def test_empty_input(self):
+        result = normalize_tags([], set(), {})
+        self.assertEqual(result, [])
+
+    def test_all_blocked(self):
+        result = normalize_tags(["hacktoberfest"], {"hacktoberfest"}, {})
+        self.assertEqual(result, [])
+
+
+class TestSuggestSimilarTags(unittest.TestCase):
+    def test_suggests_alias_mapping(self):
+        aliases = {"ml": "machine-learning"}
+        suggestions = suggest_similar_tags(["ml"], set(), aliases)
+        self.assertEqual(len(suggestions), 1)
+        self.assertIn("ml", suggestions[0])
+        self.assertIn("machine-learning", suggestions[0])
+
+    def test_suggests_similar_existing(self):
+        existing = {"machine-learning"}
+        suggestions = suggest_similar_tags(["deep-learning"], existing, {})
+        self.assertEqual(len(suggestions), 1)
+        self.assertIn("learning", suggestions[0])
+
+    def test_no_suggestions_when_unique(self):
+        suggestions = suggest_similar_tags(["ai"], {"cli", "web"}, {})
+        self.assertEqual(suggestions, [])
 
 
 if __name__ == "__main__":

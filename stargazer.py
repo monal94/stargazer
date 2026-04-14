@@ -27,3 +27,23 @@ def format_stars(count):
     if count >= 1000:
         return f"{count / 1000:.1f}k"
     return str(count)
+
+
+def fetch_metadata(owner, name):
+    """Fetch repo metadata from the GitHub API. Returns dict, or None on 404/rate limit."""
+    url = f"https://api.github.com/repos/{owner}/{name}"
+    req = urllib.request.Request(url, headers={"Accept": "application/vnd.github+json"})
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        req.add_header("Authorization", f"Bearer {token}")
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            print(f"Warning: repo not found: {owner}/{name}")
+            return None
+        if e.code == 403:
+            print("Warning: GitHub API rate limit hit. Skipping metadata fetch.")
+            return None
+        raise

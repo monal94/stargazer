@@ -381,7 +381,8 @@ class TestGenerateReadme(unittest.TestCase):
         self.assertIn("## Usage", readme)
         self.assertIn("stargazer.py", readme)
 
-    def test_grouped_by_tags(self):
+    def test_single_flat_table(self):
+        """All repos appear in one table, no per-tag sections."""
         data = {"repos": [
             {
                 "owner": "a", "name": "b", "url": "https://github.com/a/b",
@@ -397,36 +398,15 @@ class TestGenerateReadme(unittest.TestCase):
             },
         ]}
         readme = generate_readme(data)
-        self.assertIn("## ai", readme)
-        self.assertIn("## cli", readme)
+        self.assertIn("## Repos", readme)
         self.assertIn("[a/b]", readme)
         self.assertIn("[c/d]", readme)
+        # Should NOT have separate tag sections
+        self.assertNotIn("## ai", readme)
+        self.assertNotIn("## cli", readme)
 
-    def test_repo_appears_under_each_tag(self):
-        data = {"repos": [
-            {
-                "owner": "a", "name": "b", "url": "https://github.com/a/b",
-                "description": "desc", "language": "Python", "stars": 100,
-                "topics": [], "tags": ["ai", "cli"], "notes": "",
-                "status": "to-explore", "added_at": "2026-04-15",
-            },
-        ]}
-        readme = generate_readme(data)
-        lines = readme.split("\n")
-        sections = {}
-        current_section = None
-        for line in lines:
-            if line.startswith("## ") and line != "## Usage":
-                current_section = line
-                sections[current_section] = []
-            elif current_section:
-                sections[current_section].append(line)
-        ai_section = "\n".join(sections.get("## ai", []))
-        cli_section = "\n".join(sections.get("## cli", []))
-        self.assertIn("[a/b]", ai_section)
-        self.assertIn("[a/b]", cli_section)
-
-    def test_github_topics_used_for_grouping(self):
+    def test_tags_shown_in_column(self):
+        """Tags and topics combined in a Tags column, no duplication."""
         data = {"repos": [
             {
                 "owner": "a", "name": "b", "url": "https://github.com/a/b",
@@ -436,10 +416,13 @@ class TestGenerateReadme(unittest.TestCase):
             },
         ]}
         readme = generate_readme(data)
-        self.assertIn("## ai", readme)
-        self.assertIn("## machine-learning (ml)", readme)
+        # Both tags should appear in the same row
+        self.assertIn("ai", readme)
+        self.assertIn("machine-learning", readme)
+        # Repo should appear exactly once (one table row)
+        self.assertEqual(readme.count("[a/b]"), 1)
 
-    def test_topics_alias_resolved(self):
+    def test_alias_resolved_in_tags_column(self):
         data = {"repos": [
             {
                 "owner": "a", "name": "b", "url": "https://github.com/a/b",
@@ -449,9 +432,9 @@ class TestGenerateReadme(unittest.TestCase):
             },
         ]}
         readme = generate_readme(data)
-        self.assertIn("## go (golang)", readme)
-        self.assertNotIn("## golang\n", readme)
-        self.assertNotIn("## Untagged", readme)
+        # "golang" should be resolved to "go" in the tags column
+        self.assertIn("| go |", readme)
+        self.assertNotIn("| golang |", readme)
 
     def test_blocked_topics_filtered(self):
         data = {"repos": [
@@ -464,9 +447,10 @@ class TestGenerateReadme(unittest.TestCase):
         ]}
         readme = generate_readme(data)
         self.assertNotIn("hacktoberfest", readme)
-        self.assertIn("## ai", readme)
+        self.assertIn("ai", readme)
 
-    def test_untagged_section(self):
+    def test_repo_with_no_tags(self):
+        """Repos with no tags still appear in the table with empty tags column."""
         data = {"repos": [
             {
                 "owner": "a", "name": "b", "url": "https://github.com/a/b",
@@ -476,7 +460,9 @@ class TestGenerateReadme(unittest.TestCase):
             },
         ]}
         readme = generate_readme(data)
-        self.assertIn("## Untagged", readme)
+        self.assertIn("[a/b]", readme)
+        # No "Untagged" section in flat table mode
+        self.assertNotIn("## Untagged", readme)
 
     def test_pipe_in_description_escaped(self):
         data = {"repos": [
@@ -517,12 +503,10 @@ class TestGenerateReadme(unittest.TestCase):
             },
         ]}
         readme = generate_readme(data)
-        # The full 120-char description should NOT appear
         self.assertNotIn(long_desc, readme)
-        # But the first 80 chars should
         self.assertIn("A" * 80, readme)
 
-    def test_sorted_by_stars_within_group(self):
+    def test_sorted_by_stars_descending(self):
         data = {"repos": [
             {
                 "owner": "low", "name": "stars", "url": "https://github.com/low/stars",

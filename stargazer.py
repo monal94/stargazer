@@ -219,12 +219,12 @@ def suggest_similar_tags(new_tags, existing_tags, aliases):
 
 
 def generate_readme(data):
-    """Generate README markdown from repos data, grouped by tags."""
+    """Generate README markdown as a single flat table sorted by stars."""
     repos = data["repos"]
     lines = [
         "# Stargazer",
         "",
-        "A CLI tool to track interesting GitHub repos you want to explore. Add a repo URL, and stargazer fetches its metadata, organizes it by tags, and generates this README automatically — grouped by topic, sorted by stars, with weekly stat refreshes via GitHub Actions.",
+        "A CLI tool to track interesting GitHub repos you want to explore. Add a repo URL, and stargazer fetches its metadata, organizes it by tags, and generates this README automatically — sorted by stars, with weekly stat refreshes via GitHub Actions.",
         "",
     ]
 
@@ -252,56 +252,32 @@ def generate_readme(data):
         lines.append("")
         return "\n".join(lines)
 
-    # Normalize and group by tags (custom) + topics (from GitHub)
-    blocked, aliases, reverse_aliases = get_config(data)
-    groups = {}
-    untagged = []
-    for repo in repos:
-        all_tags = repo.get("tags", []) + repo.get("topics", [])
-        normalized = normalize_tags(all_tags, blocked, aliases)
-        if not normalized:
-            untagged.append(repo)
-        else:
-            for tag in normalized:
-                groups.setdefault(tag, []).append(repo)
-
-    # Sort each group by stars descending
-    for tag in groups:
-        groups[tag].sort(key=lambda r: r.get("stars", 0), reverse=True)
-    untagged.sort(key=lambda r: r.get("stars", 0), reverse=True)
-
+    # Normalize tags for display
+    blocked, aliases, _ = get_config(data)
     status_icons = {"to-explore": "○", "exploring": "◐", "explored": "●", "archived": "✕"}
 
     def escape_pipe(text):
-        """Escape pipe characters so they don't break markdown tables."""
         return text.replace("|", "\\|")
 
-    def write_table(table_repos):
-        lines.append("| Status | Repo | Description | Language | ★ | Notes |")
-        lines.append("|--------|------|-------------|----------|---|-------|")
-        for r in table_repos:
-            icon = status_icons.get(r.get("status", "to-explore"), "○")
-            name = f"[{r['owner']}/{r['name']}]({r['url']})"
-            desc = escape_pipe((r.get("description") or "")[:80])
-            lang = r.get("language") or ""
-            stars = format_stars(r.get("stars", 0))
-            notes = escape_pipe(r.get("notes") or "")
-            lines.append(f"| {icon} | {name} | {desc} | {lang} | {stars} | {notes} |")
-        lines.append("")
+    # Sort all repos by stars descending
+    sorted_repos = sorted(repos, key=lambda r: r.get("stars", 0), reverse=True)
 
-    for tag in sorted(groups.keys()):
-        aka = reverse_aliases.get(tag, [])
-        if aka:
-            lines.append(f"## {tag} ({', '.join(sorted(aka))})")
-        else:
-            lines.append(f"## {tag}")
-        lines.append("")
-        write_table(groups[tag])
-
-    if untagged:
-        lines.append("## Untagged")
-        lines.append("")
-        write_table(untagged)
+    lines.append("## Repos")
+    lines.append("")
+    lines.append("| Status | Repo | Description | Language | ★ | Tags | Notes |")
+    lines.append("|--------|------|-------------|----------|---|------|-------|")
+    for r in sorted_repos:
+        icon = status_icons.get(r.get("status", "to-explore"), "○")
+        name = f"[{r['owner']}/{r['name']}]({r['url']})"
+        desc = escape_pipe((r.get("description") or "")[:80])
+        lang = r.get("language") or ""
+        stars = format_stars(r.get("stars", 0))
+        all_tags = r.get("tags", []) + r.get("topics", [])
+        normalized = normalize_tags(all_tags, blocked, aliases)
+        tags_str = ", ".join(sorted(normalized)) if normalized else ""
+        notes = escape_pipe(r.get("notes") or "")
+        lines.append(f"| {icon} | {name} | {desc} | {lang} | {stars} | {tags_str} | {notes} |")
+    lines.append("")
 
     lines.append("---")
     lines.append(f"*Last updated: {date.today()}*")

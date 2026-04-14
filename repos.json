@@ -3,5 +3,48 @@
     "blocked_tags": [],
     "tag_aliases": {}
   },
-  "repos": []
+  "repos": [
+    {
+      "owner": "langchain-ai",
+      "name": "deepagents",
+      "url": "https://github.com/langchain-ai/deepagents",
+      "description": "Agent harness built with LangChain and LangGraph. Equipped with a planning tool, a filesystem backend, and the ability to spawn subagents - well-equipped to handle complex agentic tasks.",
+      "language": "Python",
+      "stars": 20721,
+      "topics": [
+        "ai",
+        "deepagents",
+        "langchain",
+        "langgraph"
+      ],
+      "tags": [
+        "ai"
+      ],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "langchain-ai",
+      "name": "open-swe",
+      "url": "https://github.com/langchain-ai/open-swe",
+      "description": "An Open-Source Asynchronous Coding Agent",
+      "language": "Python",
+      "stars": 9515,
+      "topics": [
+        "agent",
+        "agents",
+        "ai",
+        "anthropic",
+        "claudecode",
+        "llm",
+        "llms",
+        "openai"
+      ],
+      "tags": [],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    }
+  ]
 }

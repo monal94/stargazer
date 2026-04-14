@@ -185,3 +185,101 @@ def suggest_similar_tags(new_tags, existing_tags, aliases):
                         suggestions.append(hint)
                     break
     return suggestions
+
+
+def generate_readme(data):
+    """Generate README markdown from repos data, grouped by tags."""
+    repos = data["repos"]
+    lines = [
+        "# Stargazer",
+        "",
+        "> My collection of interesting GitHub repos to explore",
+        "",
+    ]
+
+    lines.append("## Usage")
+    lines.append("")
+    lines.append("```bash")
+    lines.append("# Add a repo")
+    lines.append('python3 stargazer.py https://github.com/owner/repo --tags ai,cli --notes "why it\'s interesting"')
+    lines.append("")
+    lines.append("# Update tags (merges by default), notes, or status")
+    lines.append('python3 stargazer.py owner/repo --update --tags new --status explored')
+    lines.append("")
+    lines.append("# Remove a repo")
+    lines.append("python3 stargazer.py owner/repo --remove")
+    lines.append("")
+    lines.append("# Refresh all repos metadata from GitHub")
+    lines.append("python3 stargazer.py --refresh")
+    lines.append("```")
+    lines.append("")
+    lines.append("**Status:** ○ to-explore · ◐ exploring · ● explored · ✕ archived")
+    lines.append("")
+
+    if not repos:
+        lines.append("No repos tracked yet.")
+        lines.append("")
+        return "\n".join(lines)
+
+    # Normalize and group by tags (custom) + topics (from GitHub)
+    blocked, aliases, reverse_aliases = get_config(data)
+    groups = {}
+    untagged = []
+    for repo in repos:
+        all_tags = repo.get("tags", []) + repo.get("topics", [])
+        normalized = normalize_tags(all_tags, blocked, aliases)
+        if not normalized:
+            untagged.append(repo)
+        else:
+            for tag in normalized:
+                groups.setdefault(tag, []).append(repo)
+
+    # Sort each group by stars descending
+    for tag in groups:
+        groups[tag].sort(key=lambda r: r.get("stars", 0), reverse=True)
+    untagged.sort(key=lambda r: r.get("stars", 0), reverse=True)
+
+    status_icons = {"to-explore": "○", "exploring": "◐", "explored": "●", "archived": "✕"}
+
+    def escape_pipe(text):
+        """Escape pipe characters so they don't break markdown tables."""
+        return text.replace("|", "\\|")
+
+    def write_table(table_repos):
+        lines.append("| Status | Repo | Description | Language | ★ | Notes |")
+        lines.append("|--------|------|-------------|----------|---|-------|")
+        for r in table_repos:
+            icon = status_icons.get(r.get("status", "to-explore"), "○")
+            name = f"[{r['owner']}/{r['name']}]({r['url']})"
+            desc = escape_pipe((r.get("description") or "")[:80])
+            lang = r.get("language") or ""
+            stars = format_stars(r.get("stars", 0))
+            notes = escape_pipe(r.get("notes") or "")
+            lines.append(f"| {icon} | {name} | {desc} | {lang} | {stars} | {notes} |")
+        lines.append("")
+
+    for tag in sorted(groups.keys()):
+        aka = reverse_aliases.get(tag, [])
+        if aka:
+            lines.append(f"## {tag} ({', '.join(sorted(aka))})")
+        else:
+            lines.append(f"## {tag}")
+        lines.append("")
+        write_table(groups[tag])
+
+    if untagged:
+        lines.append("## Untagged")
+        lines.append("")
+        write_table(untagged)
+
+    lines.append("---")
+    lines.append(f"*Last updated: {date.today()}*")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+def write_readme(content):
+    """Write generated README to disk."""
+    with open(README_FILE, "w") as f:
+        f.write(content)

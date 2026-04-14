@@ -8,6 +8,7 @@ from unittest.mock import patch, MagicMock
 
 from stargazer import parse_repo_url, format_stars, fetch_metadata
 from stargazer import load_repos, save_repos, add_repo
+from stargazer import generate_readme
 
 
 class TestParseRepoUrl(unittest.TestCase):
@@ -257,6 +258,144 @@ class TestSuggestSimilarTags(unittest.TestCase):
     def test_no_suggestions_when_unique(self):
         suggestions = suggest_similar_tags(["ai"], {"cli", "web"}, {})
         self.assertEqual(suggestions, [])
+
+
+class TestGenerateReadme(unittest.TestCase):
+    def test_empty_repos(self):
+        readme = generate_readme({"repos": []})
+        self.assertIn("# Stargazer", readme)
+        self.assertIn("## Usage", readme)
+        self.assertIn("No repos tracked yet", readme)
+
+    def test_usage_section_always_present(self):
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "desc", "language": "Python", "stars": 100,
+                "topics": [], "tags": ["ai"], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        readme = generate_readme(data)
+        self.assertIn("## Usage", readme)
+        self.assertIn("stargazer.py", readme)
+
+    def test_grouped_by_tags(self):
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "desc A", "language": "Python", "stars": 500,
+                "topics": [], "tags": ["ai"], "notes": "note A",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+            {
+                "owner": "c", "name": "d", "url": "https://github.com/c/d",
+                "description": "desc C", "language": "Go", "stars": 2000,
+                "topics": [], "tags": ["cli"], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        readme = generate_readme(data)
+        self.assertIn("## ai", readme)
+        self.assertIn("## cli", readme)
+        self.assertIn("[a/b]", readme)
+        self.assertIn("[c/d]", readme)
+
+    def test_repo_appears_under_each_tag(self):
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "desc", "language": "Python", "stars": 100,
+                "topics": [], "tags": ["ai", "cli"], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        readme = generate_readme(data)
+        lines = readme.split("\n")
+        sections = {}
+        current_section = None
+        for line in lines:
+            if line.startswith("## ") and line != "## Usage":
+                current_section = line
+                sections[current_section] = []
+            elif current_section:
+                sections[current_section].append(line)
+        ai_section = "\n".join(sections.get("## ai", []))
+        cli_section = "\n".join(sections.get("## cli", []))
+        self.assertIn("[a/b]", ai_section)
+        self.assertIn("[a/b]", cli_section)
+
+    def test_github_topics_used_for_grouping(self):
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "desc", "language": "Python", "stars": 100,
+                "topics": ["machine-learning"], "tags": ["ai"], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        readme = generate_readme(data)
+        self.assertIn("## ai", readme)
+        self.assertIn("## machine-learning (ml)", readme)
+
+    def test_topics_alias_resolved(self):
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "desc", "language": "Go", "stars": 50,
+                "topics": ["golang"], "tags": [], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        readme = generate_readme(data)
+        self.assertIn("## go (golang)", readme)
+        self.assertNotIn("## golang\n", readme)
+        self.assertNotIn("## Untagged", readme)
+
+    def test_blocked_topics_filtered(self):
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "desc", "language": "Python", "stars": 100,
+                "topics": ["hacktoberfest", "ai"], "tags": [], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        readme = generate_readme(data)
+        self.assertNotIn("hacktoberfest", readme)
+        self.assertIn("## ai", readme)
+
+    def test_untagged_section(self):
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "desc", "language": "Rust", "stars": 100,
+                "topics": [], "tags": [], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        readme = generate_readme(data)
+        self.assertIn("## Untagged", readme)
+
+    def test_sorted_by_stars_within_group(self):
+        data = {"repos": [
+            {
+                "owner": "low", "name": "stars", "url": "https://github.com/low/stars",
+                "description": "", "language": "", "stars": 10,
+                "topics": [], "tags": ["ai"], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+            {
+                "owner": "high", "name": "stars", "url": "https://github.com/high/stars",
+                "description": "", "language": "", "stars": 9999,
+                "topics": [], "tags": ["ai"], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        readme = generate_readme(data)
+        high_pos = readme.index("high/stars")
+        low_pos = readme.index("low/stars")
+        self.assertLess(high_pos, low_pos)
 
 
 if __name__ == "__main__":

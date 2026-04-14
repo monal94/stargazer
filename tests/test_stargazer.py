@@ -9,6 +9,7 @@ from unittest.mock import patch, MagicMock
 from stargazer import parse_repo_url, format_stars, fetch_metadata
 from stargazer import load_repos, save_repos, add_repo
 from stargazer import generate_readme
+from stargazer import refresh_repos
 
 
 class TestParseRepoUrl(unittest.TestCase):
@@ -396,6 +397,50 @@ class TestGenerateReadme(unittest.TestCase):
         high_pos = readme.index("high/stars")
         low_pos = readme.index("low/stars")
         self.assertLess(high_pos, low_pos)
+
+
+class TestRefreshRepos(unittest.TestCase):
+    @patch("stargazer.fetch_metadata")
+    def test_updates_stars_and_description(self, mock_fetch):
+        mock_fetch.return_value = {
+            "description": "updated desc",
+            "language": "Rust",
+            "stargazers_count": 9999,
+            "topics": ["new-topic"],
+        }
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "old desc", "language": "Python", "stars": 100,
+                "topics": [], "tags": ["ai"], "notes": "note",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        result, failures = refresh_repos(data)
+        entry = result["repos"][0]
+        self.assertEqual(entry["stars"], 9999)
+        self.assertEqual(entry["description"], "updated desc")
+        self.assertEqual(entry["language"], "Rust")
+        self.assertEqual(entry["topics"], ["new-topic"])
+        self.assertEqual(entry["tags"], ["ai"])
+        self.assertEqual(entry["notes"], "note")
+        self.assertEqual(failures, [])
+
+    @patch("stargazer.fetch_metadata")
+    def test_skips_on_failure_and_reports(self, mock_fetch):
+        mock_fetch.return_value = None
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "old", "language": "Python", "stars": 100,
+                "topics": [], "tags": [], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        result, failures = refresh_repos(data)
+        self.assertEqual(result["repos"][0]["description"], "old")
+        self.assertEqual(result["repos"][0]["stars"], 100)
+        self.assertEqual(failures, ["a/b"])
 
 
 if __name__ == "__main__":

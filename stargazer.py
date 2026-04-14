@@ -283,3 +283,21 @@ def write_readme(content):
     """Write generated README to disk."""
     with open(README_FILE, "w") as f:
         f.write(content)
+
+
+def refresh_repos(data):
+    """Re-fetch metadata from GitHub for all tracked repos. Returns (data, failures)."""
+    failures = []
+    for repo in data["repos"]:
+        print(f"  {repo['owner']}/{repo['name']}...", end=" ")
+        meta = fetch_metadata(repo["owner"], repo["name"])
+        if meta:
+            repo["description"] = meta.get("description", repo["description"])
+            repo["language"] = meta.get("language", repo["language"])
+            repo["stars"] = meta.get("stargazers_count", repo["stars"])
+            repo["topics"] = meta.get("topics", repo["topics"])
+            print(f"★ {format_stars(repo['stars'])}")
+        else:
+            failures.append(f"{repo['owner']}/{repo['name']}")
+            print("FAILED")
+    return data, failures

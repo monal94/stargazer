@@ -25,11 +25,27 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 stargazer.py --refresh
 
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet repos.json README.md 2>/dev/null; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Commit and push if changed
+        if: steps.diff.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git diff --quiet repos.json README.md || (git add repos.json README.md && git commit -m "chore: refresh repo stats" && git push)
+          git add repos.json README.md
+          git commit -m "chore: refresh repo stats"
+          git push
+
+      - name: Fail workflow if repos failed to refresh
+        if: hashFiles('.refresh-failures') != ''
+        run: echo "::warning::Some repos failed to refresh, see issue below."
 
       - name: Create issue if repos failed to refresh
         if: hashFiles('.refresh-failures') != ''
@@ -56,3 +72,4 @@ jobs:
           gh issue create \
             --title "Stargazer: repos failed to refresh" \
             --body-file /tmp/issue-body.md
+          exit 1

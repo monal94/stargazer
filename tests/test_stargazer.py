@@ -1,6 +1,7 @@
 # tests/test_stargazer.py
 import json
 import os
+import sys
 import tempfile
 import unittest
 import urllib.error
@@ -10,6 +11,7 @@ from stargazer import parse_repo_url, format_stars, fetch_metadata
 from stargazer import load_repos, save_repos, add_repo
 from stargazer import generate_readme
 from stargazer import refresh_repos
+from stargazer import main
 
 
 class TestParseRepoUrl(unittest.TestCase):
@@ -28,6 +30,19 @@ class TestParseRepoUrl(unittest.TestCase):
 
     def test_http_url(self):
         self.assertEqual(parse_repo_url("http://github.com/anthropics/claude-code"), ("anthropics", "claude-code"))
+
+    def test_strips_git_suffix(self):
+        self.assertEqual(parse_repo_url("https://github.com/anthropics/claude-code.git"), ("anthropics", "claude-code"))
+
+    def test_strips_query_params(self):
+        self.assertEqual(parse_repo_url("https://github.com/anthropics/claude-code?tab=readme"), ("anthropics", "claude-code"))
+
+    def test_strips_fragment(self):
+        self.assertEqual(parse_repo_url("https://github.com/anthropics/claude-code#setup"), ("anthropics", "claude-code"))
+
+    def test_empty_segments(self):
+        with self.assertRaises(SystemExit):
+            parse_repo_url("/")
 
 
 class TestFormatStars(unittest.TestCase):
@@ -78,6 +93,59 @@ class TestFetchMetadata(unittest.TestCase):
         result = fetch_metadata("owner", "repo")
         self.assertIsNone(result)
 
+    @patch("stargazer.urllib.request.urlopen")
+    def test_returns_none_on_500(self, mock_urlopen):
+        error = urllib.error.HTTPError("url", 500, "server error", {}, None)
+        mock_urlopen.side_effect = error
+
+        result = fetch_metadata("owner", "repo")
+        self.assertIsNone(result)
+
+    @patch("stargazer.urllib.request.urlopen")
+    def test_returns_none_on_url_error(self, mock_urlopen):
+        mock_urlopen.side_effect = urllib.error.URLError("connection refused")
+
+        result = fetch_metadata("owner", "repo")
+        self.assertIsNone(result)
+
+    @patch("stargazer.urllib.request.urlopen")
+    def test_returns_none_on_malformed_json(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.read.return_value = b"not json at all"
+        mock_response.__enter__ = lambda s: s
+        mock_response.__exit__ = MagicMock(return_value=False)
+        mock_urlopen.return_value = mock_response
+
+        result = fetch_metadata("owner", "repo")
+        self.assertIsNone(result)
+
+    @patch("stargazer.urllib.request.urlopen")
+    @patch.dict(os.environ, {"GITHUB_TOKEN": "ghp_testtoken123"})
+    def test_sends_auth_header_when_token_set(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps({"id": 1}).encode()
+        mock_response.__enter__ = lambda s: s
+        mock_response.__exit__ = MagicMock(return_value=False)
+        mock_urlopen.return_value = mock_response
+
+        fetch_metadata("owner", "repo")
+        # Verify urlopen was called with a Request object that has the Authorization header
+        call_args = mock_urlopen.call_args
+        req = call_args[0][0]
+        self.assertEqual(req.get_header("Authorization"), "Bearer ghp_testtoken123")
+
+    @patch("stargazer.urllib.request.urlopen")
+    def test_passes_timeout(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps({"id": 1}).encode()
+        mock_response.__enter__ = lambda s: s
+        mock_response.__exit__ = MagicMock(return_value=False)
+        mock_urlopen.return_value = mock_response
+
+        fetch_metadata("owner", "repo")
+        call_args = mock_urlopen.call_args
+        self.assertEqual(call_args[1].get("timeout") or call_args[0][1] if len(call_args[0]) > 1 else call_args[1].get("timeout"), 15)
+
 
 class TestJsonManagement(unittest.TestCase):
     def setUp(self):
@@ -89,6 +157,25 @@ class TestJsonManagement(unittest.TestCase):
     def test_load_empty(self):
         data = load_repos(self.data_file)
         self.assertEqual(data["repos"], [])
+
+    def test_load_missing_file_returns_default(self):
+        missing_path = os.path.join(self.tmpdir, "nonexistent.json")
+        data = load_repos(missing_path)
+        self.assertEqual(data, {"config": {}, "repos": []})
+
+    def test_load_malformed_json_exits(self):
+        bad_file = os.path.join(self.tmpdir, "bad.json")
+        with open(bad_file, "w") as f:
+            f.write("{bad json")
+        with self.assertRaises(SystemExit):
+            load_repos(bad_file)
+
+    def test_load_missing_repos_key_exits(self):
+        bad_file = os.path.join(self.tmpdir, "no_repos.json")
+        with open(bad_file, "w") as f:
+            json.dump({"config": {}}, f)
+        with self.assertRaises(SystemExit):
+            load_repos(bad_file)
 
     def test_save_and_load(self):
         data = {"repos": [{"owner": "a", "name": "b"}]}
@@ -241,6 +328,13 @@ class TestNormalizeTags(unittest.TestCase):
         result = normalize_tags(["hacktoberfest"], {"hacktoberfest"}, {})
         self.assertEqual(result, [])
 
+    def test_blocks_after_alias_resolution(self):
+        """If an alias resolves to a blocked tag, it should still be blocked."""
+        blocked = {"spam"}
+        aliases = {"junk": "spam"}
+        result = normalize_tags(["junk", "ai"], blocked, aliases)
+        self.assertEqual(result, ["ai"])
+
 
 class TestSuggestSimilarTags(unittest.TestCase):
     def test_suggests_alias_mapping(self):
@@ -259,6 +353,12 @@ class TestSuggestSimilarTags(unittest.TestCase):
     def test_no_suggestions_when_unique(self):
         suggestions = suggest_similar_tags(["ai"], {"cli", "web"}, {})
         self.assertEqual(suggestions, [])
+
+    def test_deduplicates_suggestions(self):
+        """Same alias tag appearing twice should only produce one suggestion."""
+        aliases = {"ml": "machine-learning"}
+        suggestions = suggest_similar_tags(["ml", "ml"], set(), aliases)
+        self.assertEqual(len(suggestions), 1)
 
 
 class TestGenerateReadme(unittest.TestCase):
@@ -378,6 +478,50 @@ class TestGenerateReadme(unittest.TestCase):
         readme = generate_readme(data)
         self.assertIn("## Untagged", readme)
 
+    def test_pipe_in_description_escaped(self):
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "desc with | pipe", "language": "Python", "stars": 100,
+                "topics": [], "tags": ["ai"], "notes": "note | here",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        readme = generate_readme(data)
+        self.assertIn("desc with \\| pipe", readme)
+        self.assertIn("note \\| here", readme)
+
+    def test_status_icons_correct(self):
+        repos = []
+        for status in ("to-explore", "exploring", "explored", "archived"):
+            repos.append({
+                "owner": "a", "name": status, "url": f"https://github.com/a/{status}",
+                "description": "", "language": "", "stars": 100,
+                "topics": [], "tags": ["test"], "notes": "",
+                "status": status, "added_at": "2026-04-15",
+            })
+        data = {"repos": repos}
+        readme = generate_readme(data)
+        expected_icons = {"to-explore": "\u25cb", "exploring": "\u25d0", "explored": "\u25cf", "archived": "\u2715"}
+        for status, icon in expected_icons.items():
+            self.assertIn(f"| {icon} |", readme)
+
+    def test_description_truncated_at_80_chars(self):
+        long_desc = "A" * 120
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": long_desc, "language": "Python", "stars": 100,
+                "topics": [], "tags": ["ai"], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        readme = generate_readme(data)
+        # The full 120-char description should NOT appear
+        self.assertNotIn(long_desc, readme)
+        # But the first 80 chars should
+        self.assertIn("A" * 80, readme)
+
     def test_sorted_by_stars_within_group(self):
         data = {"repos": [
             {
@@ -441,6 +585,105 @@ class TestRefreshRepos(unittest.TestCase):
         self.assertEqual(result["repos"][0]["description"], "old")
         self.assertEqual(result["repos"][0]["stars"], 100)
         self.assertEqual(failures, ["a/b"])
+
+
+class TestRefreshReposNoneHandling(unittest.TestCase):
+    @patch("stargazer.fetch_metadata")
+    def test_none_description_keeps_original(self, mock_fetch):
+        """When the API returns None for description, keep the existing value."""
+        mock_fetch.return_value = {
+            "description": None,
+            "language": None,
+            "stargazers_count": 500,
+            "topics": ["ai"],
+        }
+        data = {"repos": [
+            {
+                "owner": "a", "name": "b", "url": "https://github.com/a/b",
+                "description": "original desc", "language": "Go", "stars": 100,
+                "topics": [], "tags": [], "notes": "",
+                "status": "to-explore", "added_at": "2026-04-15",
+            },
+        ]}
+        result, failures = refresh_repos(data)
+        entry = result["repos"][0]
+        self.assertEqual(entry["description"], "original desc")
+        self.assertEqual(entry["language"], "Go")
+        self.assertEqual(entry["stars"], 500)
+        self.assertEqual(failures, [])
+
+
+class TestMain(unittest.TestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.data_file = os.path.join(self.tmpdir, "repos.json")
+        self.readme_file = os.path.join(self.tmpdir, "README.md")
+
+    @patch("stargazer.README_FILE")
+    @patch("stargazer.DATA_FILE")
+    @patch("stargazer.fetch_metadata")
+    def test_main_add_repo(self, mock_fetch, mock_data, mock_readme):
+        mock_data.__class__ = str
+        mock_fetch.return_value = {
+            "description": "test",
+            "language": "Python",
+            "stargazers_count": 42,
+            "topics": [],
+        }
+        # Write initial data file
+        with open(self.data_file, "w") as f:
+            json.dump({"repos": []}, f)
+
+        with patch("stargazer.DATA_FILE", self.data_file), \
+             patch("stargazer.README_FILE", self.readme_file), \
+             patch("sys.argv", ["stargazer", "owner/repo", "--tags", "ai"]):
+            main()
+
+        data = json.loads(open(self.data_file).read())
+        self.assertEqual(len(data["repos"]), 1)
+        self.assertEqual(data["repos"][0]["owner"], "owner")
+        self.assertTrue(os.path.exists(self.readme_file))
+
+    @patch("stargazer.fetch_metadata")
+    def test_main_remove_repo(self, mock_fetch):
+        with open(self.data_file, "w") as f:
+            json.dump({"repos": [
+                {"owner": "a", "name": "b", "url": "https://github.com/a/b",
+                 "description": "", "language": "", "stars": 0,
+                 "topics": [], "tags": [], "notes": "",
+                 "status": "to-explore", "added_at": "2026-04-15"},
+            ]}, f)
+
+        with patch("stargazer.DATA_FILE", self.data_file), \
+             patch("stargazer.README_FILE", self.readme_file), \
+             patch("sys.argv", ["stargazer", "a/b", "--remove"]):
+            main()
+
+        data = json.loads(open(self.data_file).read())
+        self.assertEqual(len(data["repos"]), 0)
+
+    def test_main_generate(self):
+        with open(self.data_file, "w") as f:
+            json.dump({"repos": []}, f)
+
+        with patch("stargazer.DATA_FILE", self.data_file), \
+             patch("stargazer.README_FILE", self.readme_file), \
+             patch("sys.argv", ["stargazer", "--generate"]):
+            main()
+
+        self.assertTrue(os.path.exists(self.readme_file))
+        readme = open(self.readme_file).read()
+        self.assertIn("# Stargazer", readme)
+
+    def test_main_no_args_exits(self):
+        with open(self.data_file, "w") as f:
+            json.dump({"repos": []}, f)
+
+        with patch("stargazer.DATA_FILE", self.data_file), \
+             patch("stargazer.README_FILE", self.readme_file), \
+             patch("sys.argv", ["stargazer"]):
+            with self.assertRaises(SystemExit):
+                main()
 
 
 if __name__ == "__main__":

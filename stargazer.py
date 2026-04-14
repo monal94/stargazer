@@ -16,10 +16,12 @@ README_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.m
 def parse_repo_url(url_or_slug):
     """Accept 'owner/repo' or a full GitHub URL. Returns (owner, name)."""
     slug = url_or_slug.replace("https://github.com/", "").replace("http://github.com/", "").strip("/")
+    slug = slug.split("?")[0].split("#")[0]  # strip query/fragment
     parts = slug.split("/")
     if len(parts) < 2 or not parts[0] or not parts[1]:
         sys.exit(f"Invalid repo: {url_or_slug}  (use owner/repo or a GitHub URL)")
-    return parts[0], parts[1]
+    name = parts[1].removesuffix(".git")
+    return parts[0], name
 
 
 def format_stars(count):
@@ -30,36 +32,58 @@ def format_stars(count):
 
 
 def fetch_metadata(owner, name):
-    """Fetch repo metadata from the GitHub API. Returns dict, or None on 404/rate limit."""
+    """Fetch repo metadata from the GitHub API. Returns dict, or None on error."""
     url = f"https://api.github.com/repos/{owner}/{name}"
     req = urllib.request.Request(url, headers={"Accept": "application/vnd.github+json"})
     token = os.environ.get("GITHUB_TOKEN")
     if token:
         req.add_header("Authorization", f"Bearer {token}")
     try:
-        with urllib.request.urlopen(req) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:
             return json.loads(resp.read())
     except urllib.error.HTTPError as e:
         if e.code == 404:
             print(f"Warning: repo not found: {owner}/{name}")
             return None
         if e.code == 403:
-            print("Warning: GitHub API rate limit hit. Skipping metadata fetch.")
+            print(f"Warning: rate limited while fetching {owner}/{name}")
             return None
-        raise
+        print(f"Warning: HTTP {e.code} fetching {owner}/{name}")
+        return None
+    except urllib.error.URLError as e:
+        print(f"Warning: network error fetching {owner}/{name}: {e.reason}")
+        return None
+    except json.JSONDecodeError:
+        print(f"Warning: invalid JSON response for {owner}/{name}")
+        return None
 
 
 def load_repos(path=None):
     """Load repos.json from disk."""
-    with open(path or DATA_FILE) as f:
-        return json.load(f)
+    target = path or DATA_FILE
+    try:
+        with open(target) as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        return {"config": {}, "repos": []}
+    except json.JSONDecodeError as e:
+        sys.exit(f"Malformed JSON in {target} (line {e.lineno}): {e.msg}")
+    if not isinstance(data, dict) or "repos" not in data:
+        sys.exit(f"Invalid data in {target}: missing 'repos' key")
+    return data
 
 
 def save_repos(data, path=None):
-    """Write repos.json to disk."""
-    with open(path or DATA_FILE, "w") as f:
-        json.dump(data, f, indent=2)
-        f.write("\n")
+    """Write repos.json to disk atomically."""
+    target = path or DATA_FILE
+    tmp = target + ".tmp"
+    try:
+        with open(tmp, "w") as f:
+            json.dump(data, f, indent=2)
+            f.write("\n")
+        os.replace(tmp, target)
+    except OSError as e:
+        sys.exit(f"Failed to write {target}: {e}")
 
 
 def add_repo(data, owner, name, tags=None, notes=None):
@@ -74,8 +98,8 @@ def add_repo(data, owner, name, tags=None, notes=None):
         "owner": owner,
         "name": name,
         "url": f"https://github.com/{owner}/{name}",
-        "description": meta.get("description", ""),
-        "language": meta.get("language", ""),
+        "description": meta.get("description") or "",
+        "language": meta.get("language") or "",
         "stars": meta.get("stargazers_count", 0),
         "topics": meta.get("topics", []),
         "tags": tags or [],
@@ -104,7 +128,7 @@ def update_repo(data, owner, name, tags=None, notes=None, status=None, replace_t
     repo = next((r for r in data["repos"] if r["owner"] == owner and r["name"] == name), None)
     if not repo:
         sys.exit(f"Not tracked: {owner}/{name}")
-    if status and status not in VALID_STATUSES:
+    if status is not None and status not in VALID_STATUSES:
         sys.exit(f"Invalid status: {status}. Choose from: {', '.join(VALID_STATUSES)}")
     if tags is not None:
         if replace_tags:
@@ -113,7 +137,7 @@ def update_repo(data, owner, name, tags=None, notes=None, status=None, replace_t
             repo["tags"] = sorted(set(repo.get("tags", []) + tags))
     if notes is not None:
         repo["notes"] = notes
-    if status:
+    if status is not None:
         repo["status"] = status
     return data
 
@@ -157,6 +181,8 @@ def normalize_tags(tags, blocked, aliases):
         if tag in blocked:
             continue
         tag = aliases.get(tag, tag)
+        if tag in blocked:
+            continue
         if tag not in result:
             result.append(tag)
     return result
@@ -292,10 +318,10 @@ def refresh_repos(data):
         print(f"  {repo['owner']}/{repo['name']}...", end=" ")
         meta = fetch_metadata(repo["owner"], repo["name"])
         if meta:
-            repo["description"] = meta.get("description", repo["description"])
-            repo["language"] = meta.get("language", repo["language"])
-            repo["stars"] = meta.get("stargazers_count", repo["stars"])
-            repo["topics"] = meta.get("topics", repo["topics"])
+            repo["description"] = meta.get("description") or repo["description"]
+            repo["language"] = meta.get("language") or repo["language"]
+            repo["stars"] = meta.get("stargazers_count") or repo["stars"]
+            repo["topics"] = meta.get("topics") or repo["topics"]
             print(f"★ {format_stars(repo['stars'])}")
         else:
             failures.append(f"{repo['owner']}/{repo['name']}")
@@ -362,8 +388,8 @@ def main():
         save_repos(data)
         if failures:
             print(f"\nFailed to fetch {len(failures)} repo(s):")
-            for f in failures:
-                print(f"  - {f}")
+            for repo_slug in failures:
+                print(f"  - {repo_slug}")
             failures_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".refresh-failures")
             with open(failures_file, "w") as fh:
                 fh.write("\n".join(failures))

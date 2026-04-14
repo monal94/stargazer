@@ -166,6 +166,236 @@
       "notes": "",
       "status": "to-explore",
       "added_at": "2026-04-15"
+    },
+    {
+      "owner": "langgenius",
+      "name": "dify",
+      "url": "https://github.com/langgenius/dify",
+      "description": "Production-ready platform for agentic workflow development.",
+      "language": "TypeScript",
+      "stars": 137764,
+      "topics": [
+        "agent",
+        "agentic-ai",
+        "agentic-framework",
+        "agentic-workflow",
+        "ai",
+        "automation",
+        "gemini",
+        "genai",
+        "gpt",
+        "gpt-4",
+        "llm",
+        "low-code",
+        "mcp",
+        "nextjs",
+        "no-code",
+        "openai",
+        "orchestration",
+        "python",
+        "rag",
+        "workflow"
+      ],
+      "tags": [],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "Genymobile",
+      "name": "scrcpy",
+      "url": "https://github.com/Genymobile/scrcpy",
+      "description": "Display and control your Android device",
+      "language": "C",
+      "stars": 138469,
+      "topics": [
+        "android",
+        "c",
+        "ffmpeg",
+        "libav",
+        "mirroring",
+        "recording",
+        "screen",
+        "sdl2"
+      ],
+      "tags": [],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "obra",
+      "name": "superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "description": "An agentic skills framework & software development methodology that works.",
+      "language": "Shell",
+      "stars": 152089,
+      "topics": [],
+      "tags": [
+        "ai",
+        "agents",
+        "claude-code",
+        "methodology",
+        "skills",
+        "md"
+      ],
+      "notes": "Agentic skills framework and software development methodology",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "anthropics",
+      "name": "skills",
+      "url": "https://github.com/anthropics/skills",
+      "description": "Public repository for Agent Skills",
+      "language": "Python",
+      "stars": 117313,
+      "topics": [
+        "agent-skills"
+      ],
+      "tags": [
+        "skills",
+        "md",
+        "claude-code"
+      ],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "OpenBB-finance",
+      "name": "OpenBB",
+      "url": "https://github.com/OpenBB-finance/OpenBB",
+      "description": "Financial data platform for analysts, quants and AI agents.",
+      "language": "Python",
+      "stars": 65876,
+      "topics": [
+        "ai",
+        "crypto",
+        "derivatives",
+        "economics",
+        "equity",
+        "finance",
+        "fixed-income",
+        "machine-learning",
+        "openbb",
+        "options",
+        "python",
+        "quantitative-finance",
+        "stocks"
+      ],
+      "tags": [],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "Fincept-Corporation",
+      "name": "FinceptTerminal",
+      "url": "https://github.com/Fincept-Corporation/FinceptTerminal",
+      "description": "FinceptTerminal is a modern finance application offering advanced market analytics, investment research, and economic data tools, designed for interactive exploration and data-driven decision-making in a user-friendly environment.",
+      "language": "Python",
+      "stars": 2941,
+      "topics": [
+        "bloomberg-terminal",
+        "contributions-welcome",
+        "finance",
+        "financial-markets",
+        "foss",
+        "good-first-issue",
+        "help-wanted",
+        "investing",
+        "investment",
+        "investment-research",
+        "machine-learning",
+        "opensource",
+        "python",
+        "quantitative-finance",
+        "stock-market",
+        "stocks"
+      ],
+      "tags": [],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "gitui-org",
+      "name": "gitui",
+      "url": "https://github.com/gitui-org/gitui",
+      "description": "Blazing \ud83d\udca5 fast terminal-ui for git written in rust \ud83e\udd80",
+      "language": "Rust",
+      "stars": 21774,
+      "topics": [
+        "async",
+        "bash",
+        "command-line-interface",
+        "command-line-tool",
+        "git",
+        "hacktoberfest",
+        "rust",
+        "terminal",
+        "tui"
+      ],
+      "tags": [],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "jesseduffield",
+      "name": "lazygit",
+      "url": "https://github.com/jesseduffield/lazygit",
+      "description": "simple terminal UI for git commands",
+      "language": "Go",
+      "stars": 76425,
+      "topics": [
+        "cli",
+        "git",
+        "terminal"
+      ],
+      "tags": [],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "openclaw",
+      "name": "openclaw",
+      "url": "https://github.com/openclaw/openclaw",
+      "description": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. \ud83e\udd9e ",
+      "language": "TypeScript",
+      "stars": 357310,
+      "topics": [
+        "ai",
+        "assistant",
+        "crustacean",
+        "molty",
+        "openclaw",
+        "own-your-data",
+        "personal"
+      ],
+      "tags": [],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
+    },
+    {
+      "owner": "MoonshotAI",
+      "name": "Kimi-K2.5",
+      "url": "https://github.com/MoonshotAI/Kimi-K2.5",
+      "description": "Moonshot's most powerful model",
+      "language": "",
+      "stars": 1751,
+      "topics": [],
+      "tags": [
+        "ai",
+        "llm",
+        "model"
+      ],
+      "notes": "",
+      "status": "to-explore",
+      "added_at": "2026-04-15"
     }
   ]
 }

@@ -301,3 +301,86 @@ def refresh_repos(data):
             failures.append(f"{repo['owner']}/{repo['name']}")
             print("FAILED")
     return data, failures
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="stargazer",
+        description="Track interesting GitHub repos you want to explore.",
+    )
+    parser.add_argument("url", nargs="?", help="GitHub repo URL or owner/repo slug")
+    parser.add_argument("-t", "--tags", help="Comma-separated tags")
+    parser.add_argument("-n", "--notes", help="Why this repo is interesting")
+    parser.add_argument("-s", "--status", help="Set status: to-explore, exploring, explored, archived")
+    parser.add_argument("--remove", action="store_true", help="Remove a tracked repo (requires url)")
+    parser.add_argument("--update", action="store_true", help="Update tags/notes/status on a tracked repo (requires url)")
+    parser.add_argument("--replace-tags", action="store_true", help="Replace tags instead of merging (use with --update)")
+    parser.add_argument("--generate", action="store_true", help="Regenerate README without adding a repo")
+    parser.add_argument("--refresh", action="store_true", help="Refresh metadata for all tracked repos and regenerate README")
+
+    args = parser.parse_args()
+
+    if not args.url and not args.generate and not args.refresh:
+        parser.print_help()
+        sys.exit(1)
+
+    data = load_repos()
+
+    if args.url and args.remove:
+        owner, name = parse_repo_url(args.url)
+        data = remove_repo(data, owner, name)
+        save_repos(data)
+        print(f"Removed {owner}/{name}")
+
+    elif args.url and args.update:
+        owner, name = parse_repo_url(args.url)
+        tags = [t.strip() for t in args.tags.split(",")] if args.tags else None
+        data = update_repo(data, owner, name, tags=tags, notes=args.notes, status=args.status, replace_tags=args.replace_tags)
+        save_repos(data)
+        print(f"Updated {owner}/{name}")
+
+    elif args.url:
+        owner, name = parse_repo_url(args.url)
+        tags = [t.strip() for t in args.tags.split(",")] if args.tags else []
+        data = add_repo(data, owner, name, tags=tags, notes=args.notes)
+        save_repos(data)
+        print(f"Added {owner}/{name}")
+
+        # Print suggestions for similar/aliased tags
+        entry = data["repos"][-1]
+        _, aliases, _ = get_config(data)
+        existing_tags = set()
+        for r in data["repos"][:-1]:
+            existing_tags.update(r.get("tags", []) + r.get("topics", []))
+        new_tags = entry.get("tags", []) + entry.get("topics", [])
+        for hint in suggest_similar_tags(new_tags, existing_tags, aliases):
+            print(hint)
+
+    if args.refresh:
+        print(f"Refreshing {len(data['repos'])} repos...")
+        data, failures = refresh_repos(data)
+        save_repos(data)
+        if failures:
+            print(f"\nFailed to fetch {len(failures)} repo(s):")
+            for f in failures:
+                print(f"  - {f}")
+            failures_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".refresh-failures")
+            with open(failures_file, "w") as fh:
+                fh.write("\n".join(failures))
+        else:
+            failures_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".refresh-failures")
+            if os.path.exists(failures_file):
+                os.remove(failures_file)
+        print("Metadata refreshed.")
+
+    if args.generate:
+        print("Regenerating README from existing data...")
+
+    # Always regenerate README after any operation
+    readme = generate_readme(data)
+    write_readme(readme)
+    print(f"README.md updated ({len(data['repos'])} repos)")
+
+
+if __name__ == "__main__":
+    main()

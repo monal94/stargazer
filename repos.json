@@ -8,9 +8,9 @@
       "owner": "langchain-ai",
       "name": "deepagents",
       "url": "https://github.com/langchain-ai/deepagents",
-      "description": "Python & TypeScript agent harness built with LangChain and LangGraph. Equipped with a planning tool, a filesystem backend, and the ability to spawn subagents - well-equipped to handle complex agentic tasks.",
+      "description": "Agent harness built with LangChain and LangGraph.",
       "language": "Python",
-      "stars": 22216,
+      "stars": 22624,
       "topics": [
         "ai",
         "deepagents",
@@ -32,7 +32,7 @@
       "url": "https://github.com/langchain-ai/open-swe",
       "description": "An Open-Source Asynchronous Coding Agent",
       "language": "Python",
-      "stars": 9713,
+      "stars": 9773,
       "topics": [
         "agent",
         "agents",
@@ -56,7 +56,7 @@
       "url": "https://github.com/lightpanda-io/browser",
       "description": "Lightpanda: the headless browser designed for AI and automation",
       "language": "Zig",
-      "stars": 29975,
+      "stars": 30228,
       "topics": [
         "browser",
         "browser-automation",
@@ -77,7 +77,7 @@
       "url": "https://github.com/msitarzewski/agency-agents",
       "description": "A complete AI agency at your fingertips - From frontend wizards to Reddit community ninjas, from whimsy injectors to reality checkers. Each agent is a specialized expert with personality, processes, and proven deliverables.",
       "language": "Shell",
-      "stars": 91906,
+      "stars": 96008,
       "topics": [],
       "tags": [
         "ai",
@@ -95,7 +95,7 @@
       "url": "https://github.com/NVIDIA/NemoClaw",
       "description": "Run OpenClaw more securely inside NVIDIA OpenShell with managed inference",
       "language": "TypeScript",
-      "stars": 20078,
+      "stars": 20278,
       "topics": [],
       "tags": [
         "ai",
@@ -114,7 +114,7 @@
       "url": "https://github.com/Shubhamsaboo/openclaw-vertexai-memorybank",
       "description": "Vertex AI Memory Bank Plugin for OpenClaw",
       "language": "TypeScript",
-      "stars": 136,
+      "stars": 137,
       "topics": [],
       "tags": [
         "ai",
@@ -132,7 +132,7 @@
       "url": "https://github.com/gsd-build/get-shit-done",
       "description": "A light-weight and powerful meta-prompting, context engineering and spec-driven development system for Claude Code by T\u00c2CHES.",
       "language": "JavaScript",
-      "stars": 59790,
+      "stars": 61453,
       "topics": [
         "claude-code",
         "context-engineering",
@@ -158,7 +158,7 @@
       "url": "https://github.com/astral-sh/ty",
       "description": "An extremely fast Python type checker and language server, written in Rust.",
       "language": "Python",
-      "stars": 18497,
+      "stars": 18573,
       "topics": [],
       "tags": [
         "python",
@@ -175,7 +175,7 @@
       "url": "https://github.com/langgenius/dify",
       "description": "Production-ready platform for agentic workflow development.",
       "language": "TypeScript",
-      "stars": 140039,
+      "stars": 140928,
       "topics": [
         "agent",
         "agentic-ai",
@@ -209,7 +209,7 @@
       "url": "https://github.com/Genymobile/scrcpy",
       "description": "Display and control your Android device",
       "language": "C",
-      "stars": 139398,
+      "stars": 139731,
       "topics": [
         "android",
         "c",
@@ -231,7 +231,7 @@
       "url": "https://github.com/obra/superpowers",
       "description": "An agentic skills framework & software development methodology that works.",
       "language": "Shell",
-      "stars": 177813,
+      "stars": 186100,
       "topics": [],
       "tags": [
         "ai",
@@ -251,7 +251,7 @@
       "url": "https://github.com/anthropics/skills",
       "description": "Public repository for Agent Skills",
       "language": "Python",
-      "stars": 127857,
+      "stars": 132046,
       "topics": [
         "agent-skills"
       ],
@@ -270,7 +270,7 @@
       "url": "https://github.com/OpenBB-finance/OpenBB",
       "description": "Financial data platform for analysts, quants and AI agents.",
       "language": "Python",
-      "stars": 66960,
+      "stars": 67378,
       "topics": [
         "ai",
         "crypto",
@@ -297,7 +297,7 @@
       "url": "https://github.com/Fincept-Corporation/FinceptTerminal",
       "description": "FinceptTerminal is a modern finance application offering advanced market analytics, investment research, and economic data tools, designed for interactive exploration and data-driven decision-making in a user-friendly environment.",
       "language": "Python",
-      "stars": 19626,
+      "stars": 20791,
       "topics": [
         "ai-agents",
         "algorithmic-trading",
@@ -328,7 +328,7 @@
       "url": "https://github.com/gitui-org/gitui",
       "description": "Blazing \ud83d\udca5 fast terminal-ui for git written in rust \ud83e\udd80",
       "language": "Rust",
-      "stars": 21870,
+      "stars": 21916,
       "topics": [
         "async",
         "bash",
@@ -351,7 +351,7 @@
       "url": "https://github.com/jesseduffield/lazygit",
       "description": "simple terminal UI for git commands",
       "language": "Go",
-      "stars": 77393,
+      "stars": 77771,
       "topics": [
         "cli",
         "git",
@@ -368,7 +368,7 @@
       "url": "https://github.com/openclaw/openclaw",
       "description": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. \ud83e\udd9e ",
       "language": "TypeScript",
-      "stars": 368096,
+      "stars": 370762,
       "topics": [
         "ai",
         "assistant",
@@ -389,7 +389,7 @@
       "url": "https://github.com/MoonshotAI/Kimi-K2.5",
       "description": "Moonshot's most powerful model",
       "language": "",
-      "stars": 1910,
+      "stars": 1943,
       "topics": [],
       "tags": [
         "ai",
@@ -406,7 +406,7 @@
       "url": "https://github.com/HKUDS/nanobot",
       "description": "\"\ud83d\udc08 nanobot: The Ultra-Lightweight Personal AI Agent\"",
       "language": "Python",
-      "stars": 41599,
+      "stars": 42193,
       "topics": [
         "ai",
         "ai-agent",
@@ -432,7 +432,7 @@
       "url": "https://github.com/RightNow-AI/openfang",
       "description": "Open-source Agent Operating System",
       "language": "Rust",
-      "stars": 17134,
+      "stars": 17383,
       "topics": [
         "agent-framework",
         "ai-agents",
@@ -454,7 +454,7 @@
       "url": "https://github.com/nousresearch/hermes-agent",
       "description": "The agent that grows with you",
       "language": "Python",
-      "stars": 131918,
+      "stars": 143732,
       "topics": [
         "ai",
         "ai-agent",
@@ -484,7 +484,7 @@
       "url": "https://github.com/bytedance/deer-flow",
       "description": "An open-source long-horizon SuperAgent harness that researches, codes, and creates. With the help of sandboxes, memories, tools, skill, subagents and message gateway, it handles different levels of tasks that could take minutes to hours.",
       "language": "Python",
-      "stars": 64686,
+      "stars": 66778,
       "topics": [
         "agent",
         "agentic",
@@ -516,7 +516,7 @@
       "url": "https://github.com/karpathy/autoresearch",
       "description": "AI agents running research on single-GPU nanochat training automatically",
       "language": "Python",
-      "stars": 78765,
+      "stars": 80374,
       "topics": [],
       "tags": [
         "ai",
@@ -534,7 +534,7 @@
       "url": "https://github.com/paperclipai/paperclip",
       "description": "Open-source orchestration for zero-human companies",
       "language": "TypeScript",
-      "stars": 62144,
+      "stars": 64241,
       "topics": [],
       "tags": [
         "ai",
@@ -552,7 +552,7 @@
       "url": "https://github.com/vercel-labs/agent-browser",
       "description": "Browser automation CLI for AI agents",
       "language": "Rust",
-      "stars": 31623,
+      "stars": 32645,
       "topics": [],
       "tags": [
         "ai",
@@ -571,7 +571,7 @@
       "url": "https://github.com/googleworkspace/cli",
       "description": "Google Workspace CLI \u2014 one command-line tool for Drive, Gmail, Calendar, Sheets, Docs, Chat, Admin, and more. Dynamically built from Google Discovery Service. Includes AI agent skills.",
       "language": "Rust",
-      "stars": 25720,
+      "stars": 26059,
       "topics": [
         "agent-skills",
         "ai-agent",
@@ -601,7 +601,7 @@
       "url": "https://github.com/ComposioHQ/awesome-claude-skills",
       "description": "A curated list of awesome Claude Skills, resources, and tools for customizing Claude AI workflows",
       "language": "Python",
-      "stars": 57835,
+      "stars": 59201,
       "topics": [
         "agent-skills",
         "ai-agents",
@@ -632,7 +632,7 @@
       "url": "https://github.com/TauricResearch/TradingAgents",
       "description": "TradingAgents: Multi-Agents LLM Financial Trading Framework",
       "language": "Python",
-      "stars": 66153,
+      "stars": 73540,
       "topics": [
         "agent",
         "finance",
@@ -651,7 +651,7 @@
       "url": "https://github.com/virattt/ai-hedge-fund",
       "description": "An AI Hedge Fund Team",
       "language": "Python",
-      "stars": 58021,
+      "stars": 58559,
       "topics": [],
       "tags": [
         "ai",
@@ -669,7 +669,7 @@
       "url": "https://github.com/vectordotdev/vector",
       "description": "A high-performance observability data pipeline.",
       "language": "Rust",
-      "stars": 21770,
+      "stars": 21808,
       "topics": [
         "agent",
         "cloud-native",
@@ -701,7 +701,7 @@
       "url": "https://github.com/tw93/Pake",
       "description": "\ud83e\udd31\ud83c\udffb Turn any webpage into a desktop app with one command.",
       "language": "Rust",
-      "stars": 48394,
+      "stars": 48625,
       "topics": [
         "chatgpt",
         "claude",
@@ -728,7 +728,7 @@
       "url": "https://github.com/affaan-m/everything-claude-code",
       "description": "The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.",
       "language": "JavaScript",
-      "stars": 172975,
+      "stars": 179047,
       "topics": [
         "ai-agents",
         "anthropic",
@@ -750,7 +750,7 @@
       "url": "https://github.com/jaywcjlove/awesome-mac",
       "description": "\uf8ff This project is dedicated to collecting high-quality macOS software and organizing them systematically by different categories for easy search and use.",
       "language": "Swift",
-      "stars": 103298,
+      "stars": 103810,
       "topics": [
         "app",
         "apple",
@@ -781,9 +781,9 @@
       "owner": "ohmyzsh",
       "name": "ohmyzsh",
       "url": "https://github.com/ohmyzsh/ohmyzsh",
-      "description": "\ud83d\ude43   A delightful community-driven (with 2,400+ contributors) framework for managing your zsh configuration. Includes 300+ optional plugins (rails, git, macOS, hub, docker, homebrew, node, php, python, etc), 140+ themes to spice up your morning, and an auto-update tool that makes it easy to keep up with the latest updates from the community.",
+      "description": "\ud83d\ude43   A delightful community-driven (with 2,500+ contributors) framework for managing your zsh configuration. Includes 300+ optional plugins (rails, git, macOS, hub, docker, homebrew, node, php, python, etc), 140+ themes to spice up your morning, and an auto-update tool that makes it easy to keep up with the latest updates from the community.",
       "language": "Shell",
-      "stars": 186701,
+      "stars": 186924,
       "topics": [
         "cli",
         "cli-app",
@@ -812,7 +812,7 @@
       "url": "https://github.com/n8n-io/n8n",
       "description": "Fair-code workflow automation platform with native AI capabilities. Combine visual building with custom code, self-host or cloud, 400+ integrations.",
       "language": "TypeScript",
-      "stars": 186629,
+      "stars": 187424,
       "topics": [
         "ai",
         "apis",
@@ -846,7 +846,7 @@
       "url": "https://github.com/microsoft/vscode",
       "description": "Visual Studio Code",
       "language": "TypeScript",
-      "stars": 184543,
+      "stars": 184786,
       "topics": [
         "editor",
         "electron",
@@ -865,7 +865,7 @@
       "url": "https://github.com/ollama/ollama",
       "description": "Get up and running with Kimi-K2.5, GLM-5, MiniMax, DeepSeek, gpt-oss, Qwen, Gemma and other models.",
       "language": "Go",
-      "stars": 170660,
+      "stars": 171180,
       "topics": [
         "deepseek",
         "gemma",
@@ -894,7 +894,7 @@
       "url": "https://github.com/Significant-Gravitas/AutoGPT",
       "description": "AutoGPT is the vision of accessible AI for everyone, to use and to build on. Our mission is to provide the tools, so that you can focus on what matters.",
       "language": "Python",
-      "stars": 183974,
+      "stars": 184165,
       "topics": [
         "agentic-ai",
         "agents",
@@ -919,7 +919,7 @@
       "url": "https://github.com/supabase/supabase",
       "description": "The Postgres development platform. Supabase gives you a dedicated Postgres database to build your web, mobile, and AI applications.",
       "language": "TypeScript",
-      "stars": 101813,
+      "stars": 102158,
       "topics": [
         "ai",
         "alternative",
@@ -952,7 +952,7 @@
       "url": "https://github.com/Shubhamsaboo/awesome-llm-apps",
       "description": "100+ AI Agent & RAG apps you can actually run \u2014 clone, customize, ship.",
       "language": "Python",
-      "stars": 108634,
+      "stars": 109741,
       "topics": [
         "agents",
         "llms",
@@ -970,7 +970,7 @@
       "url": "https://github.com/excalidraw/excalidraw",
       "description": "Virtual whiteboard for sketching hand-drawn like diagrams",
       "language": "TypeScript",
-      "stars": 122458,
+      "stars": 122930,
       "topics": [
         "canvas",
         "collaboration",
@@ -991,7 +991,7 @@
       "url": "https://github.com/open-webui/open-webui",
       "description": "User-friendly AI Interface (Supports Ollama, OpenAI API, ...)",
       "language": "Python",
-      "stars": 135437,
+      "stars": 136576,
       "topics": [
         "ai",
         "llm",
@@ -1020,7 +1020,7 @@
       "url": "https://github.com/netdata/netdata",
       "description": "The fastest path to AI-powered full stack observability, even for lean teams.",
       "language": "C",
-      "stars": 78694,
+      "stars": 78769,
       "topics": [
         "ai",
         "alerting",
@@ -1054,7 +1054,7 @@
       "url": "https://github.com/redis/redis",
       "description": "For developers, who are building real-time data-driven applications, Redis is the preferred, fastest, and most feature-rich cache, data structure server, and document and vector query engine.",
       "language": "C",
-      "stars": 74128,
+      "stars": 74279,
       "topics": [
         "cache",
         "caching",
@@ -1088,7 +1088,7 @@
       "url": "https://github.com/tursodatabase/libsql",
       "description": "libSQL is a fork of SQLite that is both Open Source, and Open Contributions.",
       "language": "C",
-      "stars": 16698,
+      "stars": 16731,
       "topics": [
         "database",
         "embedded-database",
@@ -1107,7 +1107,7 @@
       "url": "https://github.com/timescale/timescaledb",
       "description": "A time-series database for high-performance real-time analytics packaged as a Postgres extension",
       "language": "C",
-      "stars": 22557,
+      "stars": 22608,
       "topics": [
         "analytics",
         "database",
@@ -1134,7 +1134,7 @@
       "url": "https://github.com/taosdata/TDengine",
       "description": "High-performance, scalable time-series database designed for Industrial IoT (IIoT) scenarios",
       "language": "C",
-      "stars": 24836,
+      "stars": 24849,
       "topics": [
         "bigdata",
         "cloud-native",
@@ -1165,7 +1165,7 @@
       "url": "https://github.com/valkey-io/valkey",
       "description": "A flexible distributed key-value database that is optimized for caching and other realtime workloads.",
       "language": "C",
-      "stars": 25654,
+      "stars": 25722,
       "topics": [
         "cache",
         "database",
@@ -1187,7 +1187,7 @@
       "url": "https://github.com/nginx/nginx",
       "description": "The official NGINX Open Source repository.",
       "language": "C",
-      "stars": 30174,
+      "stars": 30248,
       "topics": [
         "content-cache",
         "http",
@@ -1216,7 +1216,7 @@
       "url": "https://github.com/ClickHouse/ClickHouse",
       "description": "ClickHouse\u00ae is a real-time analytics database management system",
       "language": "C++",
-      "stars": 47195,
+      "stars": 47337,
       "topics": [
         "ai",
         "analytics",
@@ -1247,7 +1247,7 @@
       "url": "https://github.com/duckdb/duckdb",
       "description": "DuckDB is an analytical in-process SQL database management system",
       "language": "C++",
-      "stars": 37919,
+      "stars": 38066,
       "topics": [
         "analytics",
         "database",
@@ -1266,7 +1266,7 @@
       "url": "https://github.com/qbittorrent/qBittorrent",
       "description": "qBittorrent BitTorrent client",
       "language": "C++",
-      "stars": 36893,
+      "stars": 37366,
       "topics": [
         "bittorrent",
         "bittorrent-client",
@@ -1286,7 +1286,7 @@
       "url": "https://github.com/dragonflydb/dragonfly",
       "description": "A modern replacement for Redis and Memcached",
       "language": "C++",
-      "stars": 30441,
+      "stars": 30456,
       "topics": [
         "cache",
         "cpp",
@@ -1315,7 +1315,7 @@
       "url": "https://github.com/mongodb/mongo",
       "description": "The MongoDB Database",
       "language": "C++",
-      "stars": 28286,
+      "stars": 28308,
       "topics": [
         "c-plus-plus",
         "database",
@@ -1333,7 +1333,7 @@
       "url": "https://github.com/sqlitebrowser/sqlitebrowser",
       "description": "Official home of the DB Browser for SQLite (DB4S) project. Previously known as \"SQLite Database Browser\" and \"Database Browser for SQLite\". Website at: ",
       "language": "C++",
-      "stars": 23987,
+      "stars": 24020,
       "topics": [
         "c-plus-plus",
         "cross-platform",
@@ -1354,7 +1354,7 @@
       "url": "https://github.com/mermaid-js/mermaid",
       "description": "Generation of diagrams like flowcharts or sequence diagrams from text in a similar manner as markdown",
       "language": "TypeScript",
-      "stars": 87799,
+      "stars": 87968,
       "topics": [
         "diagrams",
         "diagrams-as-code",
@@ -1376,7 +1376,7 @@
       "url": "https://github.com/microsoft/playwright",
       "description": "Playwright is a framework for Web Testing and Automation. It allows testing Chromium, Firefox and WebKit with a single API. ",
       "language": "TypeScript",
-      "stars": 87919,
+      "stars": 88434,
       "topics": [
         "automation",
         "chrome",
@@ -1405,7 +1405,7 @@
       "url": "https://github.com/grafana/grafana",
       "description": "The open and composable observability and data visualization platform. Visualize metrics, logs, and traces from multiple sources like Prometheus, Loki, Elasticsearch, InfluxDB, Postgres and many more. ",
       "language": "TypeScript",
-      "stars": 73573,
+      "stars": 73668,
       "topics": [
         "alerting",
         "analytics",
@@ -1434,7 +1434,7 @@
       "url": "https://github.com/apache/superset",
       "description": "Apache Superset is a Data Visualization and Data Exploration Platform",
       "language": "TypeScript",
-      "stars": 72688,
+      "stars": 72783,
       "topics": [
         "analytics",
         "apache",
@@ -1466,7 +1466,7 @@
       "url": "https://github.com/daytonaio/daytona",
       "description": "Daytona is a Secure and Elastic Infrastructure for Running AI-Generated Code",
       "language": "TypeScript",
-      "stars": 72379,
+      "stars": 72334,
       "topics": [
         "agentic-workflow",
         "ai",
@@ -1488,7 +1488,7 @@
       "url": "https://github.com/strapi/strapi",
       "description": "\ud83d\ude80 Strapi is the leading open-source headless CMS. It\u2019s 100% JavaScript/TypeScript, fully customizable, and developer-first.",
       "language": "TypeScript",
-      "stars": 72059,
+      "stars": 72142,
       "topics": [
         "api",
         "cms",
@@ -1521,7 +1521,7 @@
       "url": "https://github.com/nocodb/nocodb",
       "description": "\ud83d\udd25 \ud83d\udd25 \ud83d\udd25 A Free & Self-hostable Airtable Alternative",
       "language": "TypeScript",
-      "stars": 62911,
+      "stars": 63004,
       "topics": [
         "airtable",
         "airtable-alternative",
@@ -1547,9 +1547,9 @@
       "owner": "thedotmack",
       "name": "claude-mem",
       "url": "https://github.com/thedotmack/claude-mem",
-      "description": "A Claude Code plugin that automatically captures everything Claude does during your coding sessions, compresses it with AI (using Claude's agent-sdk), and injects relevant context back into future sessions.",
+      "description": "Persistent Context Across Sessions for Every Agent \u2013  Captures everything your agent does during sessions, compresses it with AI, and injects relevant context back into future sessions. Works with Claude Code, OpenClaw, Codex, Gemini, Hermes, Copilot, OpenCode + More",
       "language": "TypeScript",
-      "stars": 71747,
+      "stars": 74699,
       "topics": [
         "ai",
         "ai-agents",
@@ -1583,7 +1583,7 @@
       "url": "https://github.com/upstash/context7",
       "description": "Context7 Platform -- Up-to-date code documentation for LLMs and AI code editors",
       "language": "TypeScript",
-      "stars": 54406,
+      "stars": 54997,
       "topics": [
         "llm",
         "mcp",
@@ -1601,7 +1601,7 @@
       "url": "https://github.com/ultraworkers/claw-code",
       "description": "The repo is finally unlocked. enjoy the party! The fastest repo in history to surpass 100K stars \u2b50. Join Discord: https://discord.gg/5TUQKqFWd Built in Rust using oh-my-codex.",
       "language": "Rust",
-      "stars": 189945,
+      "stars": 191046,
       "topics": [],
       "tags": [
         "ai",
@@ -1623,7 +1623,7 @@
       "url": "https://github.com/rustdesk/rustdesk",
       "description": "An open-source remote desktop application designed for self-hosting, as an alternative to TeamViewer.",
       "language": "Rust",
-      "stars": 113468,
+      "stars": 113907,
       "topics": [
         "android",
         "anydesk",
@@ -1656,7 +1656,7 @@
       "url": "https://github.com/astral-sh/uv",
       "description": "An extremely fast Python package and project manager, written in Rust.",
       "language": "Rust",
-      "stars": 84326,
+      "stars": 84723,
       "topics": [
         "packaging",
         "python",
@@ -1674,7 +1674,7 @@
       "url": "https://github.com/zed-industries/zed",
       "description": "Code at the speed of thought \u2013 Zed is a high-performance, multiplayer code editor from the creators of Atom and Tree-sitter.",
       "language": "Rust",
-      "stars": 81584,
+      "stars": 82462,
       "topics": [
         "gpui",
         "rust-lang",
@@ -1692,7 +1692,7 @@
       "url": "https://github.com/BurntSushi/ripgrep",
       "description": "ripgrep recursively searches directories for a regex pattern while respecting your gitignore",
       "language": "Rust",
-      "stars": 63275,
+      "stars": 63600,
       "topics": [
         "cli",
         "command-line",
@@ -1716,7 +1716,7 @@
       "url": "https://github.com/astral-sh/ruff",
       "description": "An extremely fast Python linter and code formatter, written in Rust.",
       "language": "Rust",
-      "stars": 47358,
+      "stars": 47459,
       "topics": [
         "linter",
         "pep8",
@@ -1741,7 +1741,7 @@
       "url": "https://github.com/sharkdp/fd",
       "description": "A simple, fast and user-friendly alternative to 'find'",
       "language": "Rust",
-      "stars": 42821,
+      "stars": 42928,
       "topics": [
         "cli",
         "command-line",
@@ -1764,7 +1764,7 @@
       "url": "https://github.com/nushell/nushell",
       "description": "A new type of shell",
       "language": "Rust",
-      "stars": 39340,
+      "stars": 39418,
       "topics": [
         "nushell",
         "rust",
@@ -1781,7 +1781,7 @@
       "url": "https://github.com/pola-rs/polars",
       "description": "Extremely fast Query Engine for DataFrames, written in Rust",
       "language": "Rust",
-      "stars": 38369,
+      "stars": 38457,
       "topics": [
         "arrow",
         "dataframe",
@@ -1803,7 +1803,7 @@
       "url": "https://github.com/spacedriveapp/spacedrive",
       "description": "Spacedrive is an open source cross-platform file explorer, powered by a virtual distributed filesystem written in Rust.",
       "language": "Rust",
-      "stars": 37947,
+      "stars": 37986,
       "topics": [
         "cross-platform",
         "distributed-systems",
@@ -1825,7 +1825,7 @@
       "url": "https://github.com/dandavison/delta",
       "description": "A syntax-highlighting pager for git, diff, grep, rg --json, and blame output",
       "language": "Rust",
-      "stars": 30612,
+      "stars": 30732,
       "topics": [
         "color-themes",
         "delta",
@@ -1847,7 +1847,7 @@
       "url": "https://github.com/atuinsh/atuin",
       "description": "\u2728 Making your shell magical",
       "language": "Rust",
-      "stars": 29596,
+      "stars": 29669,
       "topics": [
         "bash",
         "fish",
@@ -1867,7 +1867,7 @@
       "url": "https://github.com/zeroclaw-labs/zeroclaw",
       "description": "Fast, small, and fully autonomous AI personal assistant infrastructure, ANY OS, ANY PLATFORM \u2014 deploy anywhere, swap anything \ud83e\udd80",
       "language": "Rust",
-      "stars": 30979,
+      "stars": 31238,
       "topics": [
         "agent",
         "agentic",
@@ -1889,7 +1889,7 @@
       "url": "https://github.com/qdrant/qdrant",
       "description": "Qdrant - High-performance, massive-scale Vector Database and Vector Search Engine for the next generation of AI. Also available in the cloud https://cloud.qdrant.io/",
       "language": "Rust",
-      "stars": 30994,
+      "stars": 31222,
       "topics": [
         "ai-search",
         "ai-search-engine",
@@ -1923,7 +1923,7 @@
       "url": "https://github.com/influxdata/influxdb",
       "description": "Scalable datastore for metrics, events, and real-time analytics",
       "language": "Rust",
-      "stars": 31483,
+      "stars": 31488,
       "topics": [
         "database",
         "go",
@@ -1945,7 +1945,7 @@
       "url": "https://github.com/rustfs/rustfs",
       "description": "\ud83d\ude802.3x faster than MinIO for 4KB object payloads. RustFS is an open-source, S3-compatible high-performance object storage system supporting migration and coexistence with other S3-compatible platforms such as MinIO and Ceph.",
       "language": "Rust",
-      "stars": 27024,
+      "stars": 27353,
       "topics": [
         "ai-native",
         "ai-storage",
@@ -1971,7 +1971,7 @@
       "url": "https://github.com/neondatabase/neon",
       "description": "Neon: Serverless Postgres. We separated storage and compute to offer autoscaling, code-like database branching, and scale to zero.",
       "language": "Rust",
-      "stars": 21716,
+      "stars": 21800,
       "topics": [
         "database",
         "postgres",
@@ -1990,7 +1990,7 @@
       "url": "https://github.com/nautechsystems/nautilus_trader",
       "description": "Production-grade Rust-native trading engine with deterministic event-driven architecture",
       "language": "Rust",
-      "stars": 22458,
+      "stars": 22637,
       "topics": [
         "algorithmic-trading-engine",
         "artificial-intelligence",
@@ -2017,7 +2017,7 @@
       "url": "https://github.com/AlexsJones/llmfit",
       "description": "Hundreds of models & providers. One command to find what runs on your hardware.",
       "language": "Rust",
-      "stars": 25204,
+      "stars": 25741,
       "topics": [
         "gguf",
         "llm",
@@ -2037,7 +2037,7 @@
       "url": "https://github.com/Kong/kong",
       "description": "\ud83e\udd8d The API and AI Gateway",
       "language": "Lua",
-      "stars": 43306,
+      "stars": 43355,
       "topics": [
         "ai",
         "ai-gateway",
@@ -2071,7 +2071,7 @@
       "url": "https://github.com/prometheus/prometheus",
       "description": "The Prometheus monitoring system and time series database.",
       "language": "Go",
-      "stars": 63890,
+      "stars": 63984,
       "topics": [
         "alerting",
         "graphing",
@@ -2092,7 +2092,7 @@
       "url": "https://github.com/traefik/traefik",
       "description": "The Cloud Native Application Proxy",
       "language": "Go",
-      "stars": 62974,
+      "stars": 63115,
       "topics": [
         "consul",
         "docker",
@@ -2120,7 +2120,7 @@
       "url": "https://github.com/minio/minio",
       "description": "MinIO is a high-performance, S3 compatible object store, open sourced under GNU AGPLv3 license.",
       "language": "Go",
-      "stars": 60858,
+      "stars": 60907,
       "topics": [
         "amazon-s3",
         "cloud",
@@ -2146,7 +2146,7 @@
       "url": "https://github.com/FiloSottile/mkcert",
       "description": "A simple zero-config tool to make locally trusted development certificates with any names you'd like.",
       "language": "Go",
-      "stars": 58734,
+      "stars": 58871,
       "topics": [
         "certificates",
         "chrome",
@@ -2172,7 +2172,7 @@
       "url": "https://github.com/go-gitea/gitea",
       "description": "Git with a cup of tea! Painless self-hosted all-in-one software development service, including Git hosting, code review, team collaboration, package registry and CI/CD",
       "language": "Go",
-      "stars": 55342,
+      "stars": 55569,
       "topics": [
         "bitbucket",
         "cicd",
@@ -2206,7 +2206,7 @@
       "url": "https://github.com/mudler/LocalAI",
       "description": "LocalAI is the open-source AI engine. Run any model - LLMs, vision, voice, image, video - on any hardware. No GPU required.",
       "language": "Go",
-      "stars": 46038,
+      "stars": 46191,
       "topics": [
         "agents",
         "ai",
@@ -2238,7 +2238,7 @@
       "url": "https://github.com/milvus-io/milvus",
       "description": "Milvus is a high-performance, cloud-native vector database built for scalable vector ANN search",
       "language": "Go",
-      "stars": 44109,
+      "stars": 44231,
       "topics": [
         "anns",
         "cloud-native",
@@ -2270,7 +2270,7 @@
       "url": "https://github.com/schollz/croc",
       "description": "Easily and securely send things from one computer to another :crocodile: :package:",
       "language": "Go",
-      "stars": 34904,
+      "stars": 34977,
       "topics": [
         "data-transfer",
         "file-sharing",
@@ -2291,7 +2291,7 @@
       "url": "https://github.com/aquasecurity/trivy",
       "description": "Find vulnerabilities, misconfigurations, secrets, SBOM in containers, Kubernetes, code repositories, clouds and more",
       "language": "Go",
-      "stars": 34836,
+      "stars": 34936,
       "topics": [
         "containers",
         "devsecops",
@@ -2320,7 +2320,7 @@
       "url": "https://github.com/cockroachdb/cockroach",
       "description": "CockroachDB \u2014 the cloud native, distributed SQL database designed for high availability, effortless scale, and control over data placement.",
       "language": "Go",
-      "stars": 32121,
+      "stars": 32144,
       "topics": [
         "cockroachdb",
         "database",
@@ -2340,7 +2340,7 @@
       "url": "https://github.com/seaweedfs/seaweedfs",
       "description": "SeaweedFS is a distributed storage system for object storage (S3), file systems, and Iceberg tables, designed to handle billions of files with O(1) disk access and effortless horizontal scaling.",
       "language": "Go",
-      "stars": 32056,
+      "stars": 32200,
       "topics": [
         "blob-storage",
         "cloud-drive",
@@ -2371,7 +2371,7 @@
       "url": "https://github.com/tailscale/tailscale",
       "description": "The easiest, most secure way to use WireGuard and 2FA.",
       "language": "Go",
-      "stars": 31166,
+      "stars": 31447,
       "topics": [
         "2fa",
         "oauth",
@@ -2391,7 +2391,7 @@
       "url": "https://github.com/helm/helm",
       "description": "The Kubernetes Package Manager",
       "language": "Go",
-      "stars": 29777,
+      "stars": 29794,
       "topics": [
         "chart",
         "charts",
@@ -2410,7 +2410,7 @@
       "url": "https://github.com/grafana/loki",
       "description": "Like Prometheus, but for logs.",
       "language": "Go",
-      "stars": 28137,
+      "stars": 28167,
       "topics": [
         "cloudnative",
         "grafana",
